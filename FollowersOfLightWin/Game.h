@@ -3,11 +3,10 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include <random>
-#include <chrono>
 
 #include "Walker.h"
 #include "ShaderLoader.h"
+#include "Collector.h"
 
 typedef float FrameTime;
 
@@ -20,11 +19,13 @@ public:
 
 protected:
 private:
-
+	
 	const float ftStep = 1.f;
 	const float ftSlice = 1.f;
 	FrameTime lastFt = 0.f;
 	FrameTime currentSlice = 0.f;
+
+	sf::Clock clock;
 
 	unsigned int windowWidth;
 	unsigned int windowHeight;
@@ -40,8 +41,11 @@ private:
 	sf::Sprite spriteWorld;
 
 	std::vector<Walker> walkers;
+	Collector collector;
 
-private:
+	float detectionRadius;
+	int bpm;
+
 	void initializeWalkers();
 	void checkInput();
 	void update();

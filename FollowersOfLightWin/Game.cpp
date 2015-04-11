@@ -1,15 +1,14 @@
 #include "Game.h"
 
-Game::Game() : windowWidth(800), windowHeight(600), walkerCount(15), shaderFile("shader.frag"), running(false)
+Game::Game() : windowWidth(1024), windowHeight(768), walkerCount(15), shaderFile("shader.frag"), running(false), detectionRadius(150.f), bpm(120)
 {
 
-	sf::ContextSettings settings;
-	settings.antialiasingLevel = 8;
-	
-	window.create(sf::VideoMode(windowWidth, windowHeight), "Followers!", sf::Style::Default, settings);
+	window.create(sf::VideoMode(windowWidth, windowHeight), "Followers!");
 
 	window.setFramerateLimit(500);
 	initializeWalkers();
+
+	collector.setRadius(detectionRadius);
 
 	//preload shader
 	shader = ShaderLoader::getShader(shaderFile);
@@ -28,7 +27,7 @@ void Game::run()
 	while (running)
 	{
 
-		auto time1(std::chrono::high_resolution_clock::now());
+		clock.restart();
 
 		window.clear(sf::Color::Black);
 		myRenderTexture.clear();
@@ -37,16 +36,14 @@ void Game::run()
 		update();
 		draw();
 
-		auto time2(std::chrono::high_resolution_clock::now());
-		auto elapsedTime(time2 - time1);
-		FrameTime ft{ std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(elapsedTime).count() };
+		FrameTime ft = static_cast<float>(clock.getElapsedTime().asMilliseconds());
 
 		lastFt = ft;
 
-		auto ftSeconds(ft / 1000.f);
+		float ftSeconds = ft / 1000.f;
 		if (ftSeconds > 0.f)
 		{
-			auto fps(1.f / ftSeconds);
+			float fps = 1.f / ftSeconds;
 			window.setTitle("FT: " + std::to_string(ft) + "\tFPS: " + std::to_string(fps));
 		}
 	}
@@ -56,7 +53,7 @@ void Game::initializeWalkers()
 {
 	for (int a = 0; a < walkerCount; ++a)
 	{
-		walkers.emplace_back(window.getSize().x / 2.f, window.getSize().y / 2.f);
+		walkers.emplace_back(window.getSize().x / 2.f, window.getSize().y / 2.f, detectionRadius, bpm);
 	}
 }
 
@@ -87,42 +84,24 @@ void Game::update()
 		{
 			walker.update(ftStep, window);
 		}
+
+		collector.update(window);
 	}
+
+	
 }
 
 void Game::draw()
 {
-	//mouse circle
-	sf::Vector2f mousePosition = (sf::Vector2f) sf::Mouse::getPosition(window);
-	sf::CircleShape shape(100);
-	shape.setFillColor(sf::Color(0,0,0,25));
-	shape.setOrigin(100, 100);
-	shape.setPosition(mousePosition);
-
-	shape.setOutlineThickness(10);
-	shape.setOutlineColor(sf::Color(70, 70, 150, 85));
-
-		
-	for (int a = 0; a < walkerCount; ++a)
+	
+	for (auto& walker : walkers)
 	{
 
-		walkers[a].draw(myRenderTexture);
-
-		shader->setParameter("frag_LightOrigin", walkers[a].getPosition());
-		shader->setParameter("frag_LightColor", walkers[a].getColor());
-		shader->setParameter("frag_LightAttenuation", walkers[a].getLightAttenuation());
-
-		sf::RenderStates states;
-		states.shader = shader;
-		states.blendMode = sf::BlendAdd;
-
-		myRenderTexture.draw(spriteWorld, states);
-
+		walker.draw(myRenderTexture, spriteWorld, shader);
 	}
 	
-	//draw mouse circle
-	myRenderTexture.draw(shape);
-
+	collector.draw(myRenderTexture);
+	
 	myRenderTexture.display();
 	window.draw(spriteWorld);
 	window.display();

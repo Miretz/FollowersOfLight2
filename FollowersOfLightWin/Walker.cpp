@@ -2,7 +2,7 @@
 
 RandomGenerator Walker::gen = RandomGenerator();
 
-Walker::Walker(float mX, float mY) : walkerWidth(6.f), walkerHeight(6.f), walkerVelocity(0.8f), randomChance(0.007f), lightAttenuation(50.f)
+Walker::Walker(float mX, float mY, float mdetectionRadius, int mLightBPM) : detectionRadius(mdetectionRadius)
 {
 	generateRandomColor();
 
@@ -10,6 +10,11 @@ Walker::Walker(float mX, float mY) : walkerWidth(6.f), walkerHeight(6.f), walker
 	shape.setSize({ walkerWidth, walkerHeight });
 	shape.setFillColor(sf::Color(static_cast<sf::Uint8>(color.x), static_cast<sf::Uint8>(color.y), static_cast<sf::Uint8>(color.z)));
 	shape.setOrigin(walkerWidth / 2.0f, walkerHeight / 2.0f);
+
+	lightBPM = (60.f / static_cast<float>(mLightBPM)) * 1000.f;
+
+	clock.restart();
+
 }
 
 void Walker::update(FrameTime ft, sf::RenderWindow& window)
@@ -19,8 +24,8 @@ void Walker::update(FrameTime ft, sf::RenderWindow& window)
 	sf::Vector2u winSize = window.getSize();
 		
 	//follow mouse if it is near the walker
-	if (abs(mousePosition.x - shape.getPosition().x) < 150.f &&
-		abs(mousePosition.y - shape.getPosition().y) < 150.f)
+	if (abs(mousePosition.x - shape.getPosition().x) < detectionRadius &&
+		abs(mousePosition.y - shape.getPosition().y) < detectionRadius)
 	{
 
 		sf::Vector2f direction = mousePosition - shape.getPosition();
@@ -48,71 +53,54 @@ void Walker::update(FrameTime ft, sf::RenderWindow& window)
 	}
 
 	//guard edges of screen
-	if ((right() >= winSize.x && velocity.x > 0) || (left() <= 0 && velocity.x < 0))
+	float top = shape.getPosition().y - shape.getSize().y / 2.0f;
+	float bottom = shape.getPosition().y + shape.getSize().y / 2.0f;
+	float left = shape.getPosition().x - shape.getSize().x / 2.0f;
+	float right = shape.getPosition().x + shape.getSize().x / 2.0f;
+
+	if ((right >= winSize.x && velocity.x > 0) || (left <= 0 && velocity.x < 0))
 	{
 		velocity.x = 0;
 	}
-	if ((top() <= 0 && velocity.y < 0) || (bottom() >= winSize.y && velocity.y > 0))
+	if ((top <= 0 && velocity.y < 0) || (bottom >= winSize.y && velocity.y > 0))
 	{
 		velocity.y = 0;
 	}
 
 	shape.move(velocity * ft);
 
-	//update lightAttenuation
-	if (lightUp)
+}
+
+
+void Walker::draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader* shader)
+{
+	target.draw(shape);
+
+	shader->setParameter("frag_LightOrigin", shape.getPosition());
+	shader->setParameter("frag_LightColor", color);
+	
+	float elapsedMs = clock.getElapsedTime().asMilliseconds();
+
+	if (elapsedMs > (lightBPM - 100.f))
 	{
-		lightAttenuation += 0.1f;
+		shader->setParameter("frag_LightAttenuation", 50.f);
+
+		if (elapsedMs > lightBPM){
+			clock.restart();
+		}
+
 	}
 	else
 	{
-		lightAttenuation -= 0.1f;
+		shader->setParameter("frag_LightAttenuation", 70.f);
 	}
-	if (lightAttenuation < 20.f || lightAttenuation > 50.f)
-	{
-		lightUp = !lightUp;
-	}
-}
 
+	sf::RenderStates states;
+	states.shader = shader;
+	states.blendMode = sf::BlendAdd;
+	
+	target.draw(spriteworld, states);
 
-void Walker::draw(sf::RenderTarget& target)
-{
-	target.draw(shape);
-}
-
-sf::Vector2f Walker::getPosition() const _NOEXCEPT
-{
-	return shape.getPosition();
-}
-
-sf::Vector3f Walker::getColor() const _NOEXCEPT
-{
-	return color;
-}
-
-float Walker::getLightAttenuation() const _NOEXCEPT
-{
-	return lightAttenuation;
-}
-
-float Walker::left()   const _NOEXCEPT
-{
-	return shape.getPosition().x - shape.getSize().x / 2.0f;
-}
-
-float Walker::right()  const _NOEXCEPT
-{
-	return shape.getPosition().x + shape.getSize().x / 2.0f;
-}
-
-float Walker::top()    const _NOEXCEPT
-{
-	return shape.getPosition().y - shape.getSize().y / 2.0f;
-}
-
-float Walker::bottom() const _NOEXCEPT
-{
-	return shape.getPosition().y + shape.getSize().y / 2.0f;
 }
 
 void Walker::generateRandomColor()
