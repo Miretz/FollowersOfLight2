@@ -1,6 +1,4 @@
-#ifndef COLLECTOR_H
-#define COLLECTOR_H
-
+#pragma once
 #include <SFML/Graphics.hpp>
 
 class Collector
@@ -9,15 +7,9 @@ private:
 	sf::CircleShape shape;
 
 public:
-	Collector();
+	Collector(const float mRadius);
 	virtual ~Collector(void) = default;
 
-	void setRadius(const float mRadius);
-
-	void update(const sf::RenderWindow& window);
+	void update(sf::Vector2f mousePosition);
 	void draw(sf::RenderTarget& target);
-
 };
-
-
-#endif COLLECTOR_H

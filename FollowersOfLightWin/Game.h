@@ -1,5 +1,4 @@
-#ifndef GAME_H
-#define GAME_H
+#pragma once
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -12,12 +11,6 @@ typedef float FrameTime;
 
 class Game
 {
-public:
-	Game();
-	virtual ~Game() = default;
-	void run();
-
-protected:
 private:
 	
 	const float ftStep = 1.f;
@@ -25,31 +18,31 @@ private:
 	FrameTime lastFt = 0.f;
 	FrameTime currentSlice = 0.f;
 
-	sf::Clock clock;
-
 	unsigned int windowWidth;
 	unsigned int windowHeight;
 	int walkerCount;
-
-	std::string shaderFile;
-	sf::Shader* shader;
-
-	bool running;
 
 	sf::RenderWindow window;
 	sf::RenderTexture myRenderTexture;
 	sf::Sprite spriteWorld;
 
+	sf::Shader* shader;
+
+	bool running;
+
 	std::vector<Walker> walkers;
 	Collector collector;
 
 	float detectionRadius;
-	int bpm;
 
 	void initializeWalkers();
 	void checkInput();
+	void checkCollisions();
 	void update();
 	void draw();
-};
 
-#endif // GAME_H
+public:
+	Game();
+	virtual ~Game() = default;
+	void run();
+};

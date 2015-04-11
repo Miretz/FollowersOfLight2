@@ -1,6 +1,4 @@
-#ifndef RANDOMGENERATOR_H
-#define RANDOMGENERATOR_H
-
+#pragma once
 #include <iostream>
 #include <random>
 
@@ -16,6 +14,3 @@ public:
 	bool randomChance(float chance);
 	float randomFloat(float min, float max);
 };
-
-
-#endif // RANDOMGENERATOR_H

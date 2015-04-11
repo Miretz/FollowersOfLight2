@@ -1,5 +1,4 @@
-#ifndef SHADERLOADER_H
-#define SHADERLOADER_H
+#pragma once
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -27,5 +26,3 @@ private:
 	typedef std::map<std::string, ShaderObject> ShadersMap;
 	static ShadersMap myShaders;
 };
-
-#endif // SHADERLOADER_H
