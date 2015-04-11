@@ -22,7 +22,7 @@ private:
 	const float randomChance = 0.007f;
 
 	float detectionRadius;
-	int lightBPM;
+	float lightBPM;
 
 	sf::RectangleShape shape;
 	sf::Vector2f velocity;

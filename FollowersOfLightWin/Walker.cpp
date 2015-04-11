@@ -79,7 +79,7 @@ void Walker::draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader*
 	shader->setParameter("frag_LightOrigin", shape.getPosition());
 	shader->setParameter("frag_LightColor", color);
 	
-	float elapsedMs = clock.getElapsedTime().asMilliseconds();
+	float elapsedMs = static_cast<float>(clock.getElapsedTime().asMilliseconds());
 
 	if (elapsedMs > (lightBPM - 100.f))
 	{
