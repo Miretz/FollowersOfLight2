@@ -2,20 +2,24 @@
 
 RandomGenerator Walker::gen = RandomGenerator();
 
-Walker::Walker(sf::Vector2u winSize, float mdetectionRadius) : detectionRadius(mdetectionRadius), selected(false), onTarget(true)
+Walker::Walker(sf::Vector2u winSize, float mdetectionRadius, const sf::Texture& texture) : detectionRadius(mdetectionRadius), selected(false), onTarget(true)
 {
+	
+	
+	sprite.setTexture(texture);
+	
 	color = generateRandomColor();
 
 	float mX = gen.randomFloat(0.f, static_cast<float>(winSize.x));
 	float mY = gen.randomFloat(0.f, static_cast<float>(winSize.y));
 
-	shape.setPosition(mX, mY);
+	sprite.setPosition(mX, mY);
 
 	targetPosition = sf::Vector2f(mX, mY);	
 
-	shape.setSize(sf::Vector2f(walkerWidth, walkerHeight));
-	shape.setFillColor(sf::Color(static_cast<sf::Uint8>(color.x), static_cast<sf::Uint8>(color.y), static_cast<sf::Uint8>(color.z)));
-	shape.setOrigin(walkerWidth / 2.0f, walkerHeight / 2.0f);
+	//sprite.setSize(sf::Vector2f(walkerWidth, walkerHeight));
+	//shape.setFillColor(sf::Color(static_cast<sf::Uint8>(color.x), static_cast<sf::Uint8>(color.y), static_cast<sf::Uint8>(color.z)));
+	sprite.setOrigin(walkerWidth / 2.0f, walkerHeight / 2.0f);
 
 }
 
@@ -27,7 +31,7 @@ void Walker::update(FrameTime ft, sf::Vector2u winSize, sf::Vector2f mousePositi
 		return;
 	}
 
-	sf::Vector2f direction = targetPosition - shape.getPosition();
+	sf::Vector2f direction = targetPosition - sprite.getPosition();
 	
 	float minRadius = detectionRadius / 2.f;
 	if ((abs(direction.x) < minRadius) && (abs(direction.y) < minRadius))
@@ -40,8 +44,8 @@ void Walker::update(FrameTime ft, sf::Vector2u winSize, sf::Vector2f mousePositi
 	
 	normalize(direction);
 
-	direction *= 0.0015f;
-	velocity += direction;
+	direction *= 0.5f;
+	velocity = direction;
 		
 	//limit velocity
 	velocity.x = std::min(walkerVelocity, velocity.x);
@@ -49,57 +53,43 @@ void Walker::update(FrameTime ft, sf::Vector2u winSize, sf::Vector2f mousePositi
 	velocity.x = std::max(-walkerVelocity, velocity.x);
 	velocity.y = std::max(-walkerVelocity, velocity.y);
 
-	//guard edges of screen
-	float top = shape.getPosition().y - shape.getSize().y / 2.0f;
-	float bottom = shape.getPosition().y + shape.getSize().y / 2.0f;
-	float left = shape.getPosition().x - shape.getSize().x / 2.0f;
-	float right = shape.getPosition().x + shape.getSize().x / 2.0f;
+	sprite.move(velocity * ft);
 
-	if ((right >= winSize.x && velocity.x > 0) || (left <= 0 && velocity.x < 0))
-	{
-		velocity.x = 0;
-	}
-	if ((top <= 0 && velocity.y < 0) || (bottom >= winSize.y && velocity.y > 0))
-	{
-		velocity.y = 0;
-	}
-
-	shape.move(velocity * ft);
 }
 
 
 void Walker::draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader* shader)
 {
-	target.draw(shape);
+	target.draw(sprite);
 
 	if (selected)
 	{
-		sf::CircleShape selector(walkerWidth * 4.f);
-		selector.setPosition(shape.getPosition());
-		selector.setOrigin(walkerWidth * 4.f, walkerWidth * 4.f);
+		sf::CircleShape selector(detectionRadius);
+		selector.setPosition(sprite.getPosition());
+		selector.setOrigin(detectionRadius, detectionRadius);
 		selector.setFillColor(sf::Color(0, 0, 0, 0));
 		selector.setOutlineThickness(2);
-		selector.setOutlineColor(sf::Color(255, 255, 255, 100));
+		selector.setOutlineColor(sf::Color(255, 255, 255, 25));
 		selector.setPointCount(150);
 		target.draw(selector);
 	}
 
-	shader->setParameter("frag_LightOrigin", shape.getPosition());
+	shader->setParameter("frag_LightOrigin", sprite.getPosition());
 	shader->setParameter("frag_LightColor", color);
-	shader->setParameter("frag_LightAttenuation", 50.f);
-	
+	shader->setParameter("frag_LightAttenuation", 30.f);
+
 	sf::RenderStates states;
 	states.shader = shader;
 	states.blendMode = sf::BlendAdd;
-	
+
 	target.draw(spriteworld, states);
 
 }
 
 void Walker::checkSelect(sf::Vector2f mousePosition)
 {
-	if ((abs(mousePosition.x - shape.getPosition().x) < detectionRadius) &&
-		(abs(mousePosition.y - shape.getPosition().y) < detectionRadius)){
+	if ((abs(mousePosition.x - sprite.getPosition().x) < detectionRadius) &&
+		(abs(mousePosition.y - sprite.getPosition().y) < detectionRadius)){
 		selected = true;
 	}
 	else
@@ -107,7 +97,7 @@ void Walker::checkSelect(sf::Vector2f mousePosition)
 		velocity.x = 0.f;
 		velocity.y = 0.f;
 		onTarget = true;
-		targetPosition = shape.getPosition();
+		targetPosition = sprite.getPosition();
 		selected = false;
 	}
 }
@@ -116,6 +106,8 @@ void Walker::setTargetPosition(sf::Vector2f mousePosition)
 {
 	if (selected)
 	{
+		velocity.x = 0.f;
+		velocity.y = 0.f;
 		targetPosition = mousePosition;
 		onTarget = false;
 	}
@@ -126,14 +118,14 @@ void Walker::checkCollision(Walker& other)
 	
 	if (!onTarget) return;
 
-	float proximity = walkerWidth * 4.f;
-	if ((abs(shape.getPosition().x - other.getPosition().x) < proximity) &&
-		(abs(shape.getPosition().y - other.getPosition().y) < proximity))
+	float proximity = walkerWidth;
+	if ((abs(sprite.getPosition().x - other.getPosition().x) < proximity) &&
+		(abs(sprite.getPosition().y - other.getPosition().y) < proximity))
 	{
 		
-		float x = shape.getPosition().x < other.getPosition().x ? shape.getPosition().x - proximity : shape.getPosition().x + proximity;
-		float y = shape.getPosition().y < other.getPosition().y ? shape.getPosition().y - proximity : shape.getPosition().y + proximity;
-		shape.setPosition(x, y);
+		float x = sprite.getPosition().x < other.getPosition().x ? sprite.getPosition().x - proximity : sprite.getPosition().x + proximity;
+		float y = sprite.getPosition().y < other.getPosition().y ? sprite.getPosition().y - proximity : sprite.getPosition().y + proximity;
+		sprite.setPosition(x, y);
 
 		numCollistions++;
 
@@ -144,11 +136,12 @@ void Walker::checkCollision(Walker& other)
 		}
 
 	}
+
 }
 
 sf::Vector2f Walker::getPosition() const
 {
-	return shape.getPosition();
+	return sprite.getPosition();
 }
 
 sf::Vector3f Walker::generateRandomColor()

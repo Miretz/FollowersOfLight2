@@ -41,6 +41,8 @@ private:
 	void update();
 	void draw();
 
+	sf::Texture texture;
+
 public:
 	Game();
 	virtual ~Game() = default;

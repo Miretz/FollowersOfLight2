@@ -1,7 +1,13 @@
 #include "Game.h"
 
-Game::Game() : windowWidth(1024), windowHeight(768), walkerCount(15), running(false), detectionRadius(100.f), collector(100.f)
+Game::Game() : windowWidth(1024), windowHeight(768), walkerCount(15), running(false), detectionRadius(80.f), collector(80.f)
 {
+	
+	if (!texture.loadFromFile("../Walker.png"))
+	{
+		std::cout << "Texture error!" << std::endl;
+	}
+	
 	//preload shader
 	shader = ShaderLoader::getShader("shader.frag");
 	shader->setParameter("frag_ScreenResolution", sf::Vector2f(static_cast<float>(windowWidth), static_cast<float>(windowHeight)));
@@ -27,8 +33,8 @@ void Game::run()
 	while (running)
 	{
 
-		window.clear(sf::Color::Black);
-		myRenderTexture.clear();
+		window.clear();
+		myRenderTexture.clear(sf::Color(0, 0, 65));
 
 		checkInput();
 		update();
@@ -53,7 +59,7 @@ void Game::initializeWalkers()
 {
 	for (int a = 0; a < walkerCount; ++a)
 	{
-		walkers.emplace_back(window.getSize(), detectionRadius);
+		walkers.emplace_back(window.getSize(), detectionRadius, texture);
 	}
 }
 

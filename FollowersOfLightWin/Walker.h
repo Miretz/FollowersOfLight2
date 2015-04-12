@@ -10,9 +10,9 @@ class Walker
 {
 private:
 
-	const float walkerWidth = 6.f;
-	const float walkerHeight = 6.f;
-	const float walkerVelocity = 0.85f; 
+	const float walkerWidth = 40.f;
+	const float walkerHeight = 60.f;
+	const float walkerVelocity = 0.65f; 
 	const float randomChance = 0.007f;
 
 	float detectionRadius;
@@ -22,7 +22,8 @@ private:
 	
 	sf::Vector2f targetPosition;
 
-	sf::RectangleShape shape;
+	sf::Sprite sprite;
+
 	sf::Vector2f velocity;
 	sf::Vector3f color;
 	
@@ -35,7 +36,7 @@ public:
 
 	static RandomGenerator gen;
 
-	Walker(sf::Vector2u winSize, float mDetectionRadius);
+	Walker(sf::Vector2u winSize, float mDetectionRadius, const sf::Texture& texture);
 	virtual ~Walker(void) = default;
 
 	void update(FrameTime ft, sf::Vector2u winSize, sf::Vector2f mousePosition);
