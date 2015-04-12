@@ -5,35 +5,31 @@
 
 #include "Walker.h"
 #include "ShaderLoader.h"
-#include "Collector.h"
 
-typedef float FrameTime;
+#define ftStep 1.f
+#define ftSlice 1.f
+
+#define windowWidth 1024
+#define windowHeight 768
+#define walkerCount 15
+
+#define detectionRadius 80.f
 
 class Game
 {
 private:
 	
-	const float ftStep = 1.f;
-	const float ftSlice = 1.f;
-	FrameTime lastFt = 0.f;
-	FrameTime currentSlice = 0.f;
-
-	unsigned int windowWidth;
-	unsigned int windowHeight;
-	int walkerCount;
+	float lastFt = 0.f;
+	float currentSlice = 0.f;
 
 	sf::RenderWindow window;
 	sf::RenderTexture myRenderTexture;
 	sf::Sprite spriteWorld;
-
 	sf::Shader* shader;
 
 	bool running;
 
 	std::vector<Walker> walkers;
-	Collector collector;
-
-	float detectionRadius;
 
 	void initializeWalkers();
 	void checkInput();

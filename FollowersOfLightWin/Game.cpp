@@ -1,14 +1,16 @@
 #include "Game.h"
 
-Game::Game() : windowWidth(1024), windowHeight(768), walkerCount(15), running(false), detectionRadius(80.f), collector(80.f)
+Game::Game() : running(false)
 {
 	
+	//load texture
 	if (!texture.loadFromFile("../Walker.png"))
 	{
 		std::cout << "Texture error!" << std::endl;
 	}
+	texture.setSmooth(true);
 	
-	//preload shader
+	//load shader
 	shader = ShaderLoader::getShader("shader.frag");
 	shader->setParameter("frag_ScreenResolution", sf::Vector2f(static_cast<float>(windowWidth), static_cast<float>(windowHeight)));
 }
@@ -17,7 +19,7 @@ void Game::run()
 {
 	
 	window.create(sf::VideoMode(windowWidth, windowHeight), "Followers!");
-	window.setFramerateLimit(250);
+	window.setVerticalSyncEnabled(true);
 	initializeWalkers();
 	
 	myRenderTexture.create(windowWidth, windowHeight);
@@ -42,7 +44,7 @@ void Game::run()
 		draw();
 
 		sf::Int32 elapsedTime = clock.restart().asMilliseconds();
-		FrameTime ft = static_cast<float>(elapsedTime);
+		float ft = static_cast<float>(elapsedTime);
 
 		lastFt = ft;
 
@@ -76,26 +78,17 @@ void Game::checkInput()
 		{
 			running = false;
 		}
-		else if (event.type == sf::Event::MouseButtonPressed)
-		{
-			if (event.mouseButton.button == sf::Mouse::Left)
-			{
-				sf::Vector2f mousePosition = (sf::Vector2f) sf::Mouse::getPosition(window);
-				for (auto& walker : walkers){
-					walker.checkSelect(mousePosition);
-				}
-			}
-			if (event.mouseButton.button == sf::Mouse::Right)
-			{
-				sf::Vector2f mousePosition = (sf::Vector2f) sf::Mouse::getPosition(window);
-				for (auto& walker : walkers){
-					walker.setTargetPosition(mousePosition);
-				}
-			}
+		else {
 
+			sf::Vector2f mousePosition = (sf::Vector2f) sf::Mouse::getPosition(window);
 
+			for (auto& walker : walkers)
+			{
+				walker.handle(event, mousePosition);
+			}
 		}
 	}
+		
 }
 
 void Game::checkCollisions(){
@@ -122,11 +115,7 @@ void Game::update()
 		{
 			walker.update(ftStep, window.getSize(), mousePosition);
 		}
-
-		collector.update(mousePosition);
 	}
-
-	
 }
 
 void Game::draw()
@@ -137,8 +126,6 @@ void Game::draw()
 
 		walker.draw(myRenderTexture, spriteWorld, shader);
 	}
-	
-	collector.draw(myRenderTexture);
 	
 	myRenderTexture.display();
 	window.draw(spriteWorld);

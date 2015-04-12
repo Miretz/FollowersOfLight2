@@ -75,14 +75,12 @@
     <None Include="shader.frag" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Collector.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="RandomGenerator.h" />
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="Walker.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Collector.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="RandomGenerator.cpp" />

@@ -4,21 +4,17 @@
 #include <iostream>
 #include "RandomGenerator.h"
 
-typedef float FrameTime;
+#define walkerWidth 40.f
+#define walkerHeight 60.f
+#define walkerVelocity 0.65f
 
 class Walker
 {
 private:
 
-	const float walkerWidth = 40.f;
-	const float walkerHeight = 60.f;
-	const float walkerVelocity = 0.65f; 
-	const float randomChance = 0.007f;
-
 	float detectionRadius;
 	bool selected;
 	bool onTarget;
-	int numCollistions = 0;
 	
 	sf::Vector2f targetPosition;
 
@@ -28,9 +24,9 @@ private:
 	sf::Vector3f color;
 	
 	sf::Vector3f generateRandomColor();
-	int generateRandomChance();
-	float generateVelocityFloat();
 	void normalize(sf::Vector2f& source);
+	bool checkSelect(sf::Vector2f mousePosition);
+	void setTargetPosition(sf::Vector2f targetPosition);
 		
 public:
 
@@ -39,11 +35,10 @@ public:
 	Walker(sf::Vector2u winSize, float mDetectionRadius, const sf::Texture& texture);
 	virtual ~Walker(void) = default;
 
-	void update(FrameTime ft, sf::Vector2u winSize, sf::Vector2f mousePosition);
+	void update(float ft, sf::Vector2u winSize, sf::Vector2f mousePosition);
 	void draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader* shader);
-
-	void checkSelect(sf::Vector2f mousePosition);
-	void setTargetPosition(sf::Vector2f targetPosition);
+	void handle(sf::Event& event, sf::Vector2f mousepPosition);
+	
 	void checkCollision(Walker& other);
 	sf::Vector2f getPosition() const;
 	
