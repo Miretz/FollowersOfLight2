@@ -2,6 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <memory>
+#include <queue>
 #include "RandomGenerator.h"
 
 #define walkerWidth 40.f
@@ -12,11 +14,11 @@ class Walker
 {
 private:
 
-	float detectionRadius;
 	bool selected;
-	bool onTarget;
-	
-	sf::Vector2f targetPosition;
+
+	int numCol = 0;
+
+	std::queue<sf::Vector2f> targets;
 
 	sf::Sprite sprite;
 
@@ -26,20 +28,21 @@ private:
 	sf::Vector3f generateRandomColor();
 	void normalize(sf::Vector2f& source);
 	bool checkSelect(sf::Vector2f mousePosition);
-	void setTargetPosition(sf::Vector2f targetPosition);
-		
+	void addTarget(const sf::Vector2f targetPosition);
+
 public:
 
 	static RandomGenerator gen;
 
-	Walker(sf::Vector2u winSize, float mDetectionRadius, const sf::Texture& texture);
+	Walker(sf::Vector2u winSize, const sf::Texture& texture);
 	virtual ~Walker(void) = default;
 
 	void update(float ft, sf::Vector2u winSize, sf::Vector2f mousePosition);
 	void draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader* shader);
 	void handle(sf::Event& event, sf::Vector2f mousepPosition);
 	
-	void checkCollision(Walker& other);
+	void checkCollision(const sf::FloatRect otherBounds, const sf::Vector2u winSize);
 	sf::Vector2f getPosition() const;
+	sf::FloatRect getBounds() const;
 	
 };

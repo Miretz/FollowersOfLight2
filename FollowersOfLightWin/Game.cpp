@@ -61,7 +61,7 @@ void Game::initializeWalkers()
 {
 	for (int a = 0; a < walkerCount; ++a)
 	{
-		walkers.emplace_back(window.getSize(), detectionRadius, texture);
+		walkers.emplace_back(std::make_unique<Walker>(window.getSize(), texture));
 	}
 }
 
@@ -84,7 +84,7 @@ void Game::checkInput()
 
 			for (auto& walker : walkers)
 			{
-				walker.handle(event, mousePosition);
+				walker->handle(event, mousePosition);
 			}
 		}
 	}
@@ -96,7 +96,7 @@ void Game::checkCollisions(){
 		for (int b = 0; b < walkerCount; ++b){
 			if (a != b)
 			{
-				walkers[a].checkCollision(walkers[b]);
+				walkers[a]->checkCollision(walkers[b]->getBounds(), window.getSize());
 			}
 		}
 	}
@@ -113,7 +113,7 @@ void Game::update()
 	{
 		for (auto& walker : walkers)
 		{
-			walker.update(ftStep, window.getSize(), mousePosition);
+			walker->update(ftStep, window.getSize(), mousePosition);
 		}
 	}
 }
@@ -124,7 +124,7 @@ void Game::draw()
 	for (auto& walker : walkers)
 	{
 
-		walker.draw(myRenderTexture, spriteWorld, shader);
+		walker->draw(myRenderTexture, spriteWorld, shader);
 	}
 	
 	myRenderTexture.display();

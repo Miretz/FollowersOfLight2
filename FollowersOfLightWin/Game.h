@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <memory>
 
 #include "Walker.h"
 #include "ShaderLoader.h"
@@ -29,7 +30,7 @@ private:
 
 	bool running;
 
-	std::vector<Walker> walkers;
+	std::vector<std::unique_ptr<Walker>> walkers;
 
 	void initializeWalkers();
 	void checkInput();
