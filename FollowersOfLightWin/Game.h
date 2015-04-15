@@ -4,17 +4,22 @@
 #include <iostream>
 #include <memory>
 
+#include "Entity.h"
 #include "Walker.h"
 #include "ShaderLoader.h"
 
-#define ftStep 1.f
-#define ftSlice 1.f
+#define FTSTEP 1.f
+#define FTSLICE 1.f
 
-#define windowWidth 1024
-#define windowHeight 768
-#define walkerCount 15
+#define WINDOW_WIDTH 1024
+#define WINDOW_HEIGHT 768
+#define WALKER_COUNT 15
 
-#define detectionRadius 80.f
+#define DETECTION_RADIUS 80.f
+
+#define WALKER_WIDTH 40
+#define WALKER_HEIGHT 60
+
 
 class Game
 {
@@ -22,21 +27,21 @@ private:
 	
 	float lastFt = 0.f;
 	float currentSlice = 0.f;
+	bool running;
 
 	sf::RenderWindow window;
 	sf::RenderTexture myRenderTexture;
 	sf::Sprite spriteWorld;
 	sf::Shader* shader;
 
-	bool running;
-
-	std::vector<std::unique_ptr<Walker>> walkers;
+	std::vector<std::unique_ptr<Entity>> entities;
 
 	void initializeWalkers();
 	void checkInput();
-	void checkCollisions();
 	void update();
 	void draw();
+	void drawGrid();
+	void checkCollisions();
 
 	sf::Texture texture;
 

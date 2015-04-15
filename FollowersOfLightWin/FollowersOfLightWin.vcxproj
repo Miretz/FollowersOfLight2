@@ -75,6 +75,7 @@
     <None Include="shader.frag" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="RandomGenerator.h" />
     <ClInclude Include="ShaderLoader.h" />

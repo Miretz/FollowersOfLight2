@@ -2,11 +2,9 @@
 
 RandomGenerator Walker::gen = RandomGenerator();
 
-Walker::Walker(sf::Vector2u winSize, const sf::Texture& texture) : selected(false)
+Walker::Walker(const sf::Vector2f& mWalkerSize, const sf::Texture& mTexture, const sf::Vector2u& mWinSize) : walkerSize(mWalkerSize), winSize(mWinSize)
 {
-	
-	
-	sprite.setTexture(texture);
+	sprite.setTexture(mTexture);
 	
 	color = generateRandomColor();
 
@@ -15,24 +13,18 @@ Walker::Walker(sf::Vector2u winSize, const sf::Texture& texture) : selected(fals
 
 	sprite.setPosition(mX, mY);
 
-	targets.push(sf::Vector2f(mX, mY));	
-
-	//sprite.setSize(sf::Vector2f(walkerWidth, walkerHeight));
-	//shape.setFillColor(sf::Color(static_cast<sf::Uint8>(color.x), static_cast<sf::Uint8>(color.y), static_cast<sf::Uint8>(color.z)));
-	sprite.setOrigin(walkerWidth / 2.0f, walkerHeight / 2.0f);
-
+	sprite.setOrigin(walkerSize.x / 2.0f, walkerSize.y / 2.0f);
 }
 
-void Walker::update(float ft, sf::Vector2u winSize, sf::Vector2f mousePosition)
+void Walker::update(float ft)
 {
-	
 	if (targets.empty()) return;
 
 	sf::Vector2f targetPosition = targets.front();
 
 	sf::Vector2f distance = targetPosition - sprite.getPosition();
 	
-	float minRadius = walkerWidth;
+	float minRadius = 5.f;
 	if ((abs(distance.x) < minRadius) && (abs(distance.y) < minRadius))
 	{
 		targets.pop();
@@ -43,43 +35,16 @@ void Walker::update(float ft, sf::Vector2u winSize, sf::Vector2f mousePosition)
 	
 	normalize(distance);
 
-	sf::Vector2f speed = distance * walkerVelocity;
-	velocity = speed;
+	velocity = distance * WALKER_VELOCITY_LIMIT;
 		
 	//limit velocity
-	velocity.x = std::min(walkerVelocity, velocity.x);
-	velocity.y = std::min(walkerVelocity, velocity.y);
-	velocity.x = std::max(-walkerVelocity, velocity.x);
-	velocity.y = std::max(-walkerVelocity, velocity.y);
+	velocity.x = std::min(WALKER_VELOCITY_LIMIT, velocity.x);
+	velocity.y = std::min(WALKER_VELOCITY_LIMIT, velocity.y);
+	velocity.x = std::max(-WALKER_VELOCITY_LIMIT, velocity.x);
+	velocity.y = std::max(-WALKER_VELOCITY_LIMIT, velocity.y);
 
 	sprite.move(velocity * ft);
-
-	sf::FloatRect boundingBox = sprite.getGlobalBounds();
-
-	if ((boundingBox.left + walkerWidth) >= winSize.x && velocity.x > 0) 
-	{
-		sprite.setPosition(winSize.x - walkerWidth, getPosition().y);
-		velocity.x = 0;
-	}
-	else if (boundingBox.left <= 0 && velocity.x < 0)
-	{
-		sprite.setPosition(0, getPosition().y);
-		velocity.x = 0;
-	}
-
-	if (boundingBox.top <= 0 && velocity.y < 0) 
-	{
-		sprite.setPosition(getPosition().x, 0);
-		velocity.y = 0;
-	}
-	else if ((boundingBox.top + walkerHeight) >= winSize.y && velocity.y > 0)
-	{
-		sprite.setPosition(getPosition().x, winSize.y - walkerHeight);
-		velocity.y = 0;
-	}
 	
-	
-
 }
 
 
@@ -113,7 +78,7 @@ void Walker::draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader*
 
 }
 
-void Walker::handle(sf::Event& event, sf::Vector2f mousePosition)
+void Walker::handle(const sf::Event& event, const sf::Vector2f& mousePosition)
 {
 	if (event.type == sf::Event::MouseButtonPressed)
 	{
@@ -126,10 +91,69 @@ void Walker::handle(sf::Event& event, sf::Vector2f mousePosition)
 			addTarget(mousePosition);
 		}
 	}
+	if (event.type == sf::Event::KeyPressed)
+	{
+		if (event.key.code == sf::Keyboard::A)
+		{
+			selected = true;
+		}
+	}
+}
+
+void Walker::checkCollision(const sf::FloatRect& otherBounds)
+{
+	sf::FloatRect boundingBox = sprite.getGlobalBounds();
+
+	if (boundingBox.intersects(otherBounds))
+	{
+		numCol++;
+
+		if (numCol > 10000)
+		{
+			while (!targets.empty()) targets.pop();
+			numCol = 0;
+		}
+
+		if (numCol % 10 == 0)
+		{
+			float newX = sprite.getPosition().x;
+			float newY = sprite.getPosition().y;
+
+			if (numCol % 20 == 0)
+			{
+				if (boundingBox.left >= otherBounds.left){
+					newX = otherBounds.left + (walkerSize.x);
+				}
+				else if (boundingBox.left < otherBounds.left){
+					newX = otherBounds.left - (walkerSize.x);
+				}
+			}
+			else 
+			{
+				if (boundingBox.top >= otherBounds.top){
+					newY = otherBounds.top + (walkerSize.y);
+				}
+				else if (boundingBox.top < otherBounds.top){
+					newY = otherBounds.top - (walkerSize.y);
+				}
+			}
+			
+			std::queue<sf::Vector2f> newTargets;
+			newTargets.push(sf::Vector2f(newX, newY));
+			while (!targets.empty())
+			{
+				newTargets.push(targets.front());
+				targets.pop();
+			}
+			targets.swap(newTargets);
+		}
+
+	}
+
 }
 
 
-bool Walker::checkSelect(sf::Vector2f mousePosition)
+bool Walker::checkSelect(const sf::Vector2f& mousePosition)
 {
 	
 	sf::FloatRect boundingBox = sprite.getGlobalBounds();
@@ -158,58 +182,11 @@ void Walker::addTarget(const sf::Vector2f mousePosition)
 {
 	if (selected)
 	{
+		//while (!targets.empty()) targets.pop();
+		
 		velocity.x = 0.f;
 		velocity.y = 0.f;
 		targets.push(mousePosition);
-	}
-}
-
-void Walker::checkCollision(const sf::FloatRect otherBounds, const sf::Vector2u winSize)
-{
-	
-	sf::FloatRect boundingBox = sprite.getGlobalBounds();
-	
-	if (boundingBox.intersects(otherBounds))
-	{
-		float newX = sprite.getPosition().x;
-		float newY = sprite.getPosition().y;
-
-		if (boundingBox.left > otherBounds.left){
-			newX += walkerWidth;
-		}
-		if (boundingBox.top > otherBounds.top){
-			newY += walkerHeight;
-		}
-		if (boundingBox.left < otherBounds.left){
-			newX -= walkerWidth;
-		}
-		if (boundingBox.top < otherBounds.top){
-			newY -= walkerHeight;
-		}
-
-		if (numCol > 10){
-			while (!targets.empty())
-			{
-				targets.pop();
-			}
-			numCol = 0;
-			targets.push(sf::Vector2f(newX, newY));
-		} 
-		else {
-			numCol++;
-			
-			if (numCol == 5)
-			{
-				std::queue<sf::Vector2f> newTargets;
-				newTargets.push(sf::Vector2f(newX, newY));
-				while (!targets.empty())
-				{
-					newTargets.push(targets.front());
-					targets.pop();
-				}
-				targets.swap(newTargets);
-			}
-		}
 	}
 }
 

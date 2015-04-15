@@ -12,21 +12,21 @@ Game::Game() : running(false)
 	
 	//load shader
 	shader = ShaderLoader::getShader("shader.frag");
-	shader->setParameter("frag_ScreenResolution", sf::Vector2f(static_cast<float>(windowWidth), static_cast<float>(windowHeight)));
+	shader->setParameter("frag_ScreenResolution", sf::Vector2f(static_cast<float>(WINDOW_WIDTH), static_cast<float>(WINDOW_HEIGHT)));
 }
 
 void Game::run()
 {
 	
-	window.create(sf::VideoMode(windowWidth, windowHeight), "Followers!");
+	window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Followers!");
 	window.setVerticalSyncEnabled(true);
 	initializeWalkers();
 	
-	myRenderTexture.create(windowWidth, windowHeight);
+	myRenderTexture.create(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	spriteWorld.setTexture(myRenderTexture.getTexture());
 	spriteWorld.setOrigin(spriteWorld.getTextureRect().width / 2.f, spriteWorld.getTextureRect().height / 2.f);
-	spriteWorld.setPosition(windowWidth / 2.f, windowHeight / 2.f);
+	spriteWorld.setPosition(WINDOW_WIDTH / 2.f, WINDOW_HEIGHT / 2.f);
 	
 	sf::Clock clock;
 
@@ -40,7 +40,6 @@ void Game::run()
 
 		checkInput();
 		update();
-		checkCollisions();
 		draw();
 
 		sf::Int32 elapsedTime = clock.restart().asMilliseconds();
@@ -59,9 +58,9 @@ void Game::run()
 
 void Game::initializeWalkers()
 {
-	for (int a = 0; a < walkerCount; ++a)
+	for (int a = 0; a < WALKER_COUNT; ++a)
 	{
-		walkers.emplace_back(std::make_unique<Walker>(window.getSize(), texture));
+		entities.emplace_back(std::make_unique<Walker>(sf::Vector2f(WALKER_WIDTH, WALKER_HEIGHT), texture, window.getSize()));
 	}
 }
 
@@ -82,24 +81,13 @@ void Game::checkInput()
 
 			sf::Vector2f mousePosition = (sf::Vector2f) sf::Mouse::getPosition(window);
 
-			for (auto& walker : walkers)
+			for (auto& entity : entities)
 			{
-				walker->handle(event, mousePosition);
+				entity->handle(event, mousePosition);
 			}
 		}
 	}
 		
-}
-
-void Game::checkCollisions(){
-	for (int a = 0; a < walkerCount; ++a){
-		for (int b = 0; b < walkerCount; ++b){
-			if (a != b)
-			{
-				walkers[a]->checkCollision(walkers[b]->getBounds(), window.getSize());
-			}
-		}
-	}
 }
 
 void Game::update()
@@ -109,25 +97,74 @@ void Game::update()
 	sf::Vector2f mousePosition = (sf::Vector2f) sf::Mouse::getPosition(window);
 
 	//update multiple times based on fps
-	for (; currentSlice >= ftSlice; currentSlice -= ftSlice)
+	for (; currentSlice >= FTSLICE; currentSlice -= FTSLICE)
 	{
-		for (auto& walker : walkers)
+		for (auto& entity : entities)
 		{
-			walker->update(ftStep, window.getSize(), mousePosition);
+			entity->update(FTSTEP);
 		}
+
 	}
+
+	checkCollisions();
+	
 }
 
 void Game::draw()
 {
 	
-	for (auto& walker : walkers)
+	//draw grid
+	drawGrid();
+
+	for (auto& entity : entities)
 	{
 
-		walker->draw(myRenderTexture, spriteWorld, shader);
+		entity->draw(myRenderTexture, spriteWorld, shader);
 	}
 	
 	myRenderTexture.display();
 	window.draw(spriteWorld);
 	window.display();
+}
+
+void Game::drawGrid()
+{
+	for (int i = 0; i < WINDOW_WIDTH; ++i)
+	{
+		if ((i % WALKER_WIDTH) == 0)
+		{
+			float ifL = static_cast<float>(i);
+			sf::Vertex line[] =
+			{
+				sf::Vertex(sf::Vector2f(ifL, 0.f), sf::Color(0, 0, 95), sf::Vector2f(100.f, 100.f)),
+				sf::Vertex(sf::Vector2f(ifL, static_cast<float>(WINDOW_HEIGHT)), sf::Color(0, 0, 95), sf::Vector2f(100.f, 100.f))
+			};
+			myRenderTexture.draw(line, 2, sf::Lines);
+		}
+	}
+	for (int i = 0; i < WINDOW_HEIGHT; ++i)
+	{
+		if ((i % WALKER_HEIGHT) == 0)
+		{
+			float ifL = static_cast<float>(i);
+			sf::Vertex line[] =
+			{
+				sf::Vertex(sf::Vector2f(0.f, ifL), sf::Color(0, 0, 95), sf::Vector2f(100.f, 100.f)),
+				sf::Vertex(sf::Vector2f(static_cast<float>(WINDOW_WIDTH), ifL), sf::Color(0, 0, 95), sf::Vector2f(100.f, 100.f))
+			};
+			myRenderTexture.draw(line, 2, sf::Lines);
+		}
+	}
+}
+
+
+void Game::checkCollisions(){
+	for (int a = 0; a < WALKER_COUNT; ++a){
+		for (int b = 0; b < WALKER_COUNT; ++b){
+			if (a != b)
+			{
+				entities[a]->checkCollision(entities[b]->getBounds());
+			}
+		}
+	}
 }
