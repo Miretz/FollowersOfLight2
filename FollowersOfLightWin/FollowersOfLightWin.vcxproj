@@ -79,6 +79,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="RandomGenerator.h" />
     <ClInclude Include="ShaderLoader.h" />
+    <ClInclude Include="Tilemap.h" />
     <ClInclude Include="Walker.h" />
   </ItemGroup>
   <ItemGroup>
@@ -86,9 +87,11 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="RandomGenerator.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
+    <ClCompile Include="Tilemap.cpp" />
     <ClCompile Include="Walker.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\Tilemap.png" />
     <Image Include="..\Walker.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

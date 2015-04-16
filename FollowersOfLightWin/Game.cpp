@@ -13,6 +13,23 @@ Game::Game() : running(false)
 	//load shader
 	shader = ShaderLoader::getShader("shader.frag");
 	shader->setParameter("frag_ScreenResolution", sf::Vector2f(static_cast<float>(WINDOW_WIDTH), static_cast<float>(WINDOW_HEIGHT)));
+
+	//load tilemap
+	const int level[] =
+	{
+		0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+		1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+		0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+		0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+		0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+		2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
+		0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+	};
+	
+	if (!map.load("../Tilemap.png", sf::Vector2u(32, 32), level, WINDOW_WIDTH / WALKER_WIDTH, WINDOW_HEIGHT / WALKER_HEIGHT))
+		std::cout << "Error loading tilemap!" << std::endl;
+
 }
 
 void Game::run()
@@ -113,6 +130,8 @@ void Game::update()
 void Game::draw()
 {
 	
+	myRenderTexture.draw(map);
+
 	//draw grid
 	drawGrid();
 
@@ -136,8 +155,8 @@ void Game::drawGrid()
 			float ifL = static_cast<float>(i);
 			sf::Vertex line[] =
 			{
-				sf::Vertex(sf::Vector2f(ifL, 0.f), sf::Color(0, 0, 95), sf::Vector2f(100.f, 100.f)),
-				sf::Vertex(sf::Vector2f(ifL, static_cast<float>(WINDOW_HEIGHT)), sf::Color(0, 0, 95), sf::Vector2f(100.f, 100.f))
+				sf::Vertex(sf::Vector2f(ifL, 0.f), sf::Color(95, 95, 95), sf::Vector2f(100.f, 100.f)),
+				sf::Vertex(sf::Vector2f(ifL, static_cast<float>(WINDOW_HEIGHT)), sf::Color(95, 95, 95), sf::Vector2f(100.f, 100.f))
 			};
 			myRenderTexture.draw(line, 2, sf::Lines);
 		}
@@ -149,8 +168,8 @@ void Game::drawGrid()
 			float ifL = static_cast<float>(i);
 			sf::Vertex line[] =
 			{
-				sf::Vertex(sf::Vector2f(0.f, ifL), sf::Color(0, 0, 95), sf::Vector2f(100.f, 100.f)),
-				sf::Vertex(sf::Vector2f(static_cast<float>(WINDOW_WIDTH), ifL), sf::Color(0, 0, 95), sf::Vector2f(100.f, 100.f))
+				sf::Vertex(sf::Vector2f(0.f, ifL), sf::Color(95, 95, 95), sf::Vector2f(100.f, 100.f)),
+				sf::Vertex(sf::Vector2f(static_cast<float>(WINDOW_WIDTH), ifL), sf::Color(95, 95, 95), sf::Vector2f(100.f, 100.f))
 			};
 			myRenderTexture.draw(line, 2, sf::Lines);
 		}
