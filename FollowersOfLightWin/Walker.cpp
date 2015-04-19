@@ -50,7 +50,7 @@ void Walker::update(float ft)
 
 void Walker::draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader* shader)
 {
-	target.draw(sprite);
+	
 
 	if (selected)
 	{
@@ -75,6 +75,8 @@ void Walker::draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader*
 	states.blendMode = sf::BlendAdd;
 
 	target.draw(spriteworld, states);
+
+	target.draw(sprite);
 
 }
 

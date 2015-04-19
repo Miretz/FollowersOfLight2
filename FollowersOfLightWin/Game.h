@@ -18,8 +18,8 @@
 
 #define DETECTION_RADIUS 80.f
 
-#define WALKER_WIDTH 32
-#define WALKER_HEIGHT 32
+#define WALKER_WIDTH 64
+#define WALKER_HEIGHT 64
 
 
 class Game
