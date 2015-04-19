@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <algorithm>
 #include <memory>
 #include <queue>
 
@@ -14,8 +15,6 @@ class Walker : public Entity
 {
 private:
 
-	std::queue<sf::Vector2f> targets;
-
 	sf::Sprite sprite;
 
 	sf::Vector2f velocity;
@@ -24,13 +23,12 @@ private:
 
 	sf::Vector2f walkerSize;
 	sf::Vector2u winSize;
-
+	sf::Vector2f target;
+	
 	void normalize(sf::Vector2f& source);
 
 	bool checkSelect(const sf::Vector2f& mousePosition);
 	void addTarget(const sf::Vector2f targetPosition);
-
-	int numCol = 0;
 
 public:
 

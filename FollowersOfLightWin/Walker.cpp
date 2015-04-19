@@ -8,26 +8,23 @@ Walker::Walker(const sf::Vector2f& mWalkerSize, const sf::Texture& mTexture, con
 	
 	color = generateRandomColor();
 
-	float mX = gen.randomFloat(0.f, static_cast<float>(winSize.x));
-	float mY = gen.randomFloat(0.f, static_cast<float>(winSize.y));
+	float mX = gen.randomFloat(0.f, static_cast<float>(winSize.x - walkerSize.x)) + walkerSize.x;
+	float mY = gen.randomFloat(0.f, static_cast<float>(winSize.y - walkerSize.y)) + walkerSize.y;
 
 	sprite.setPosition(mX, mY);
+
+	target = sprite.getPosition();
 
 	sprite.setOrigin(walkerSize.x / 2.0f, walkerSize.y / 2.0f);
 }
 
 void Walker::update(float ft)
 {
-	if (targets.empty()) return;
 
-	sf::Vector2f targetPosition = targets.front();
-
-	sf::Vector2f distance = targetPosition - sprite.getPosition();
+	sf::Vector2f distance = target - sprite.getPosition();
 	
-	float minRadius = 5.f;
-	if ((abs(distance.x) < minRadius) && (abs(distance.y) < minRadius))
+	if ((abs(distance.x) < walkerSize.x) && (abs(distance.y) < walkerSize.y))
 	{
-		targets.pop();
 		velocity.x = 0.f;
 		velocity.y = 0.f;
 		return;
@@ -50,7 +47,6 @@ void Walker::update(float ft)
 
 void Walker::draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader* shader)
 {
-	
 
 	if (selected)
 	{
@@ -80,6 +76,42 @@ void Walker::draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader*
 
 }
 
+void Walker::checkCollision(const sf::FloatRect& otherBounds)
+{
+	sf::FloatRect boundingBox = sprite.getGlobalBounds();
+
+	if (selected && boundingBox.intersects(otherBounds))
+	{
+
+		float newX = sprite.getPosition().x;
+		float newY = sprite.getPosition().y;
+
+		bool leftMore = (abs(boundingBox.left - otherBounds.left) > abs(boundingBox.top - otherBounds.top));
+		
+		if (leftMore){
+			if (boundingBox.left >= otherBounds.left){
+				newX = otherBounds.left + (walkerSize.x * 1.5f);
+			}
+			if (boundingBox.left < otherBounds.left){
+				newX = otherBounds.left - (walkerSize.x * 0.5f);
+			}
+		}
+		else {
+			if (boundingBox.top >= otherBounds.top){
+				newY = otherBounds.top + (walkerSize.y * 1.5f);
+			}
+			if (boundingBox.top < otherBounds.top){
+				newY = otherBounds.top - (walkerSize.y * 0.5f);
+			}
+		}
+		
+		sprite.setPosition(newX, newY);
+		target.x = newX;
+		target.y = newY;
+	}
+
+}
+
 void Walker::handle(const sf::Event& event, const sf::Vector2f& mousePosition)
 {
 	if (event.type == sf::Event::MouseButtonPressed)
@@ -87,10 +119,6 @@ void Walker::handle(const sf::Event& event, const sf::Vector2f& mousePosition)
 		if (event.mouseButton.button == sf::Mouse::Left)
 		{
 			checkSelect(mousePosition);
-		}
-		if (event.mouseButton.button == sf::Mouse::Right)
-		{
-			addTarget(mousePosition);
 		}
 	}
 	if (event.type == sf::Event::KeyPressed)
@@ -100,64 +128,17 @@ void Walker::handle(const sf::Event& event, const sf::Vector2f& mousePosition)
 			selected = true;
 		}
 	}
-}
 
-void Walker::checkCollision(const sf::FloatRect& otherBounds)
-{
-	sf::FloatRect boundingBox = sprite.getGlobalBounds();
-
-	if (boundingBox.intersects(otherBounds))
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 	{
-		numCol++;
-
-		if (numCol > 10000)
-		{
-			while (!targets.empty()) targets.pop();
-			numCol = 0;
-		}
-
-		if (numCol % 10 == 0)
-		{
-			float newX = sprite.getPosition().x;
-			float newY = sprite.getPosition().y;
-
-			if (numCol % 20 == 0)
-			{
-				if (boundingBox.left >= otherBounds.left){
-					newX = otherBounds.left + (walkerSize.x);
-				}
-				else if (boundingBox.left < otherBounds.left){
-					newX = otherBounds.left - (walkerSize.x);
-				}
-			}
-			else 
-			{
-				if (boundingBox.top >= otherBounds.top){
-					newY = otherBounds.top + (walkerSize.y);
-				}
-				else if (boundingBox.top < otherBounds.top){
-					newY = otherBounds.top - (walkerSize.y);
-				}
-			}
-			
-			std::queue<sf::Vector2f> newTargets;
-			newTargets.push(sf::Vector2f(newX, newY));
-			while (!targets.empty())
-			{
-				newTargets.push(targets.front());
-				targets.pop();
-			}
-			targets.swap(newTargets);
-		}
-
+		addTarget(mousePosition);
 	}
 
 }
 
-
 bool Walker::checkSelect(const sf::Vector2f& mousePosition)
 {
-	
+
 	sf::FloatRect boundingBox = sprite.getGlobalBounds();
 
 	if (boundingBox.contains(mousePosition))
@@ -169,26 +150,25 @@ bool Walker::checkSelect(const sf::Vector2f& mousePosition)
 			selected = true;
 		}
 	}
-	else 
+	else
 	{
 		if (!sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)){
 			selected = false;
 		}
 	}
-	
+
 	return selected;
-	
+
 }
 
 void Walker::addTarget(const sf::Vector2f mousePosition)
 {
 	if (selected)
 	{
-		//while (!targets.empty()) targets.pop();
-		
 		velocity.x = 0.f;
 		velocity.y = 0.f;
-		targets.push(mousePosition);
+		target.x = mousePosition.x;
+		target.y = mousePosition.y;
 	}
 }
 

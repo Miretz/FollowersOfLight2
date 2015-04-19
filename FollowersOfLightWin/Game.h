@@ -6,6 +6,7 @@
 
 #include "Entity.h"
 #include "Walker.h"
+#include "Box.h"
 #include "ShaderLoader.h"
 #include "Tilemap.h"
 
@@ -14,7 +15,10 @@
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
-#define WALKER_COUNT 15
+
+#define WALKER_COUNT 6
+#define BOX_COUNT 16
+
 
 #define DETECTION_RADIUS 80.f
 

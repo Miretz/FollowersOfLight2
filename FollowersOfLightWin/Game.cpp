@@ -17,18 +17,18 @@ Game::Game() : running(false)
 	//load tilemap
 	const int level[] =
 	{
-		1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-		1, 1, 1, 1, 1, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		1, 3, 3, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3,
-		1, 3, 0, 0, 0, 0, 0, 0, 3, 1, 1, 1, 1, 1, 1, 1,
-		3, 3, 0, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1,
-		3, 0, 0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		3, 0, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		3, 0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		3, 0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-		3, 0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1,
-		3, 0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1,
-		3, 0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
+		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
+		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
+		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
+		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
+		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
+		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
+		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
+		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
+		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
+		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
+		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
 	};
 	
 	if (!map.load("../Tilemap.png", sf::Vector2u(64, 64), level, 16, 12))
@@ -82,6 +82,14 @@ void Game::initializeWalkers()
 	for (int a = 0; a < WALKER_COUNT; ++a)
 	{
 		entities.emplace_back(std::make_unique<Walker>(sf::Vector2f(WALKER_WIDTH, WALKER_HEIGHT), texture, window.getSize()));
+	}
+	
+	for (int a = 0; a < BOX_COUNT; ++a)
+	{
+		if (a != 4)
+		{
+			entities.emplace_back(std::make_unique<Box>(sf::Vector2f(((a + 1) * WALKER_WIDTH) - (WALKER_WIDTH / 2.0f), (10 * WALKER_HEIGHT) - (WALKER_HEIGHT / 2.0f)), sf::Vector2f(WALKER_WIDTH, WALKER_HEIGHT), texture, window.getSize()));
+		}
 	}
 }
 
@@ -182,11 +190,11 @@ void Game::drawGrid()
 
 
 void Game::checkCollisions(){
-	for (int a = 0; a < WALKER_COUNT; ++a){
-		for (int b = 0; b < WALKER_COUNT; ++b){
-			if (a != b)
+	for (auto& entityA : entities){
+		for (auto& entityB : entities){
+			if (entityA != entityB)
 			{
-				entities[a]->checkCollision(entities[b]->getBounds());
+				entityA->checkCollision(entityB->getBounds());
 			}
 		}
 	}
