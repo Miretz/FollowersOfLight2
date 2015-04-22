@@ -1,7 +1,5 @@
 #include "Game.h"
 
-WindowHandler* WindowHandler::s_pInstance = nullptr;
-
 Game::Game() : running(false)
 {
 	
@@ -9,11 +7,8 @@ Game::Game() : running(false)
 	window = WindowHandler::Instance()->getWindow();
 
 	//load texture
-	if (!texture.loadFromFile(WALKER_TEXTURE_PATH))
-	{
-		std::cout << "Texture error!" << std::endl;
-	}
-	texture.setSmooth(true);
+	texture = TextureHandler::getTexture(WALKER_TEXTURE_PATH);
+	texture->setSmooth(true);
 	
 	//load shader
 	shader = ShaderHandler::getShader(SHADER_PATH);
@@ -85,14 +80,14 @@ void Game::initializeWalkers()
 {
 	for (int a = 0; a < WALKER_COUNT; ++a)
 	{
-		entities.emplace_back(std::make_unique<Walker>(sf::Vector2f(TILE_WIDTH, TILE_HEIGHT), texture, window->getSize()));
+		entities.emplace_back(std::make_unique<Walker>(sf::Vector2f(TILE_WIDTH, TILE_HEIGHT), *texture, window->getSize()));
 	}
 	
 	for (int a = 0; a < BOX_COUNT; ++a)
 	{
 		if (a != 4)
 		{
-			entities.emplace_back(std::make_unique<Box>(sf::Vector2f(((a + 1) * TILE_WIDTH) - (TILE_WIDTH / 2.0f), (10 * TILE_HEIGHT) - (TILE_WIDTH / 2.0f)), sf::Vector2f(TILE_WIDTH, TILE_HEIGHT), texture, window->getSize()));
+			entities.emplace_back(std::make_unique<Box>(sf::Vector2f(((a + 1) * TILE_WIDTH) - (TILE_WIDTH / 2.0f), (10 * TILE_HEIGHT) - (TILE_WIDTH / 2.0f)), sf::Vector2f(TILE_WIDTH, TILE_HEIGHT), *texture, window->getSize()));
 		}
 	}
 }

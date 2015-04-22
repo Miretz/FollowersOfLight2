@@ -9,6 +9,7 @@
 #include "Entities/Box.h"
 
 #include "Handlers/ShaderHandler.h"
+#include "Handlers/TextureHandler.h"
 #include "Handlers/WindowHandler.h"
 
 #include "Utils/Tilemap.h"
@@ -51,7 +52,7 @@ class Game
 	void drawGrid();
 	void checkCollisions();
 
-	sf::Texture texture;
+	sf::Texture* texture;
 
 	Tilemap map;
 
