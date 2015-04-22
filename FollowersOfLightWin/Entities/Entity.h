@@ -1,12 +1,16 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include "../Utils/RandomGenerator.h"
 
 class Entity
 {
 public:
-	bool selected{ false };
 
+	static RandomGenerator gen;
+
+	bool selected{ false };
+	
 	virtual ~Entity() { }
 	virtual void update(float ft) { }
 	virtual void draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader* shader) { }

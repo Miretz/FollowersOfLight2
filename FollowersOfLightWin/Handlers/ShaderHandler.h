@@ -5,7 +5,7 @@
 #include <map>
 
 
-class ShaderLoader
+class ShaderHandler
 {
 public:
 	static sf::Shader* getShader(const std::string& path);

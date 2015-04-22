@@ -4,37 +4,40 @@
 #include <iostream>
 #include <memory>
 
-#include "Entity.h"
-#include "Walker.h"
-#include "Box.h"
-#include "ShaderLoader.h"
-#include "Tilemap.h"
+#include "Entities/Entity.h"
+#include "Entities/Walker.h"
+#include "Entities/Box.h"
+
+#include "Handlers/ShaderHandler.h"
+#include "Handlers/WindowHandler.h"
+
+#include "Utils/Tilemap.h"
 
 #define FTSTEP 1.f
 #define FTSLICE 1.f
 
-#define WINDOW_WIDTH 1024
-#define WINDOW_HEIGHT 768
-
 #define WALKER_COUNT 6
 #define BOX_COUNT 16
 
-
 #define DETECTION_RADIUS 80.f
 
-#define WALKER_WIDTH 64
-#define WALKER_HEIGHT 64
+#define TILE_WIDTH 64
+#define TILE_HEIGHT 64
+
+//note change this afterwards
+#define SHADER_PATH "../FollowersOfLightWin/Resources/shader.frag"
+#define TILEMAP_PATH "../FollowersOfLightWin/Resources/Tilemap.png"
+#define WALKER_TEXTURE_PATH "../FollowersOfLightWin/Resources/Walker.png"
+
 
 
 class Game
 {
-private:
-	
 	float lastFt = 0.f;
 	float currentSlice = 0.f;
 	bool running;
 
-	sf::RenderWindow window;
+	sf::RenderWindow* window;
 	sf::RenderTexture myRenderTexture;
 	sf::Sprite spriteWorld;
 	sf::Shader* shader;

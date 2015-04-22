@@ -72,29 +72,31 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="shader.frag" />
+    <None Include="Resources\shader.frag" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Box.h" />
-    <ClInclude Include="Entity.h" />
+    <ClInclude Include="Entities\Box.h" />
+    <ClInclude Include="Entities\Entity.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="RandomGenerator.h" />
-    <ClInclude Include="ShaderLoader.h" />
-    <ClInclude Include="Tilemap.h" />
-    <ClInclude Include="Walker.h" />
+    <ClInclude Include="Handlers\WindowHandler.h" />
+    <ClInclude Include="Utils\RandomGenerator.h" />
+    <ClInclude Include="Handlers\ShaderHandler.h" />
+    <ClInclude Include="Utils\Tilemap.h" />
+    <ClInclude Include="Entities\Walker.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Box.cpp" />
+    <ClCompile Include="Entities\Box.cpp" />
+    <ClCompile Include="Entities\Entity.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="RandomGenerator.cpp" />
-    <ClCompile Include="ShaderLoader.cpp" />
-    <ClCompile Include="Tilemap.cpp" />
-    <ClCompile Include="Walker.cpp" />
+    <ClCompile Include="Utils\RandomGenerator.cpp" />
+    <ClCompile Include="Handlers\ShaderHandler.cpp" />
+    <ClCompile Include="Utils\Tilemap.cpp" />
+    <ClCompile Include="Entities\Walker.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\Tilemap.png" />
-    <Image Include="..\Walker.png" />
+    <Image Include="Resources\Tilemap.png" />
+    <Image Include="Resources\Walker.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

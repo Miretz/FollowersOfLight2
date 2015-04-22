@@ -1,7 +1,5 @@
 #include "Walker.h"
 
-RandomGenerator Walker::gen = RandomGenerator();
-
 Walker::Walker(const sf::Vector2f& mWalkerSize, const sf::Texture& mTexture, const sf::Vector2u& mWinSize) : walkerSize(mWalkerSize), winSize(mWinSize)
 {
 	sprite.setTexture(mTexture);

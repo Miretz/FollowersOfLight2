@@ -1,7 +1,5 @@
 #include "Box.h"
 
-RandomGenerator Box::gen = RandomGenerator();
-
 Box::Box(const sf::Vector2f& mWalkerPos, const sf::Vector2f& mWalkerSize, const sf::Texture& mTexture, const sf::Vector2u& mWinSize) : walkerSize(mWalkerSize), winSize(mWinSize)
 {
 	shape.setPosition(mWalkerPos.x, mWalkerPos.y);

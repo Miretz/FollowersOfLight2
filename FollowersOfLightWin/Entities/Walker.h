@@ -7,7 +7,6 @@
 #include <queue>
 
 #include "Entity.h"
-#include "RandomGenerator.h"
 
 #define WALKER_VELOCITY_LIMIT 0.65f
 
@@ -31,8 +30,6 @@ private:
 	void addTarget(const sf::Vector2f targetPosition);
 
 public:
-
-	static RandomGenerator gen;
 
 	Walker(const sf::Vector2f& mWalkerSize, const sf::Texture& mTexture, const sf::Vector2u& mWinSize);
 	virtual ~Walker(void) = default;

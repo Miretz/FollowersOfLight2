@@ -2,7 +2,6 @@
 
 #include <SFML/Graphics.hpp>
 #include "Entity.h"
-#include "RandomGenerator.h"
 
 class Box : public Entity
 {
@@ -13,8 +12,6 @@ private:
 	sf::Vector2u winSize;
 
 public:
-
-	static RandomGenerator gen;
 
 	Box(const sf::Vector2f& walkerPos, const sf::Vector2f& mWalkerSize, const sf::Texture& mTexture, const sf::Vector2u& mWinSize);
 	virtual ~Box(void) = default;

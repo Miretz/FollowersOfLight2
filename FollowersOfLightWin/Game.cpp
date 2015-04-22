@@ -1,18 +1,23 @@
 #include "Game.h"
 
+WindowHandler* WindowHandler::s_pInstance = nullptr;
+
 Game::Game() : running(false)
 {
 	
+	//create window singleton instance
+	window = WindowHandler::Instance()->getWindow();
+
 	//load texture
-	if (!texture.loadFromFile("../Walker.png"))
+	if (!texture.loadFromFile(WALKER_TEXTURE_PATH))
 	{
 		std::cout << "Texture error!" << std::endl;
 	}
 	texture.setSmooth(true);
 	
 	//load shader
-	shader = ShaderLoader::getShader("shader.frag");
-	shader->setParameter("frag_ScreenResolution", sf::Vector2f(static_cast<float>(WINDOW_WIDTH), static_cast<float>(WINDOW_HEIGHT)));
+	shader = ShaderHandler::getShader(SHADER_PATH);
+	shader->setParameter("frag_ScreenResolution", sf::Vector2f(window->getSize()));
 
 	//load tilemap
 	const int level[] =
@@ -31,7 +36,7 @@ Game::Game() : running(false)
 		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
 	};
 	
-	if (!map.load("../Tilemap.png", sf::Vector2u(64, 64), level, 16, 12))
+	if (!map.load(TILEMAP_PATH, sf::Vector2u(64, 64), level, 16, 12))
 		std::cout << "Error loading tilemap!" << std::endl;
 
 }
@@ -39,15 +44,14 @@ Game::Game() : running(false)
 void Game::run()
 {
 	
-	window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Followers!");
-	window.setVerticalSyncEnabled(true);
+	window->setVerticalSyncEnabled(true);
 	initializeWalkers();
 	
-	myRenderTexture.create(WINDOW_WIDTH, WINDOW_HEIGHT);
+	myRenderTexture.create(window->getSize().x, window->getSize().y);
 
 	spriteWorld.setTexture(myRenderTexture.getTexture());
 	spriteWorld.setOrigin(spriteWorld.getTextureRect().width / 2.f, spriteWorld.getTextureRect().height / 2.f);
-	spriteWorld.setPosition(WINDOW_WIDTH / 2.f, WINDOW_HEIGHT / 2.f);
+	spriteWorld.setPosition(window->getSize().x / 2.f, window->getSize().y / 2.f);
 	
 	sf::Clock clock;
 
@@ -56,7 +60,7 @@ void Game::run()
 	while (running)
 	{
 
-		window.clear();
+		window->clear();
 		myRenderTexture.clear(sf::Color(0, 0, 65));
 
 		checkInput();
@@ -72,7 +76,7 @@ void Game::run()
 		if (ftSeconds > 0.f)
 		{
 			float fps = 1.f / ftSeconds;
-			window.setTitle("FT: " + std::to_string(ft) + "\tFPS: " + std::to_string(fps));
+			window->setTitle("FT: " + std::to_string(ft) + "\tFPS: " + std::to_string(fps));
 		}
 	}
 }
@@ -81,14 +85,14 @@ void Game::initializeWalkers()
 {
 	for (int a = 0; a < WALKER_COUNT; ++a)
 	{
-		entities.emplace_back(std::make_unique<Walker>(sf::Vector2f(WALKER_WIDTH, WALKER_HEIGHT), texture, window.getSize()));
+		entities.emplace_back(std::make_unique<Walker>(sf::Vector2f(TILE_WIDTH, TILE_HEIGHT), texture, window->getSize()));
 	}
 	
 	for (int a = 0; a < BOX_COUNT; ++a)
 	{
 		if (a != 4)
 		{
-			entities.emplace_back(std::make_unique<Box>(sf::Vector2f(((a + 1) * WALKER_WIDTH) - (WALKER_WIDTH / 2.0f), (10 * WALKER_HEIGHT) - (WALKER_HEIGHT / 2.0f)), sf::Vector2f(WALKER_WIDTH, WALKER_HEIGHT), texture, window.getSize()));
+			entities.emplace_back(std::make_unique<Box>(sf::Vector2f(((a + 1) * TILE_WIDTH) - (TILE_WIDTH / 2.0f), (10 * TILE_HEIGHT) - (TILE_WIDTH / 2.0f)), sf::Vector2f(TILE_WIDTH, TILE_HEIGHT), texture, window->getSize()));
 		}
 	}
 }
@@ -96,7 +100,7 @@ void Game::initializeWalkers()
 void Game::checkInput()
 {
 	sf::Event event;
-	while (window.pollEvent(event))
+	while (window->pollEvent(event))
 	{
 		if (event.type == sf::Event::Closed)
 		{
@@ -108,7 +112,7 @@ void Game::checkInput()
 		}
 		else {
 
-			sf::Vector2f mousePosition = (sf::Vector2f) sf::Mouse::getPosition(window);
+			sf::Vector2f mousePosition = (sf::Vector2f) sf::Mouse::getPosition(*window);
 
 			for (auto& entity : entities)
 			{
@@ -123,7 +127,7 @@ void Game::update()
 {
 	currentSlice += lastFt;
 
-	sf::Vector2f mousePosition = (sf::Vector2f) sf::Mouse::getPosition(window);
+	sf::Vector2f mousePosition = (sf::Vector2f) sf::Mouse::getPosition(*window);
 
 	//update multiple times based on fps
 	for (; currentSlice >= FTSLICE; currentSlice -= FTSLICE)
@@ -154,34 +158,34 @@ void Game::draw()
 	}
 	
 	myRenderTexture.display();
-	window.draw(spriteWorld);
-	window.display();
+	window->draw(spriteWorld);
+	window->display();
 }
 
 void Game::drawGrid()
 {
-	for (int i = 0; i < WINDOW_WIDTH; ++i)
+	for (unsigned int i = 0; i < window->getSize().x; ++i)
 	{
-		if ((i % WALKER_WIDTH) == 0)
+		if ((i % TILE_WIDTH) == 0)
 		{
 			float ifL = static_cast<float>(i);
 			sf::Vertex line[] =
 			{
 				sf::Vertex(sf::Vector2f(ifL, 0.f), sf::Color(95, 95, 95), sf::Vector2f(100.f, 100.f)),
-				sf::Vertex(sf::Vector2f(ifL, static_cast<float>(WINDOW_HEIGHT)), sf::Color(95, 95, 95), sf::Vector2f(100.f, 100.f))
+				sf::Vertex(sf::Vector2f(ifL, window->getSize().y), sf::Color(95, 95, 95), sf::Vector2f(100.f, 100.f))
 			};
 			myRenderTexture.draw(line, 2, sf::Lines);
 		}
 	}
-	for (int i = 0; i < WINDOW_HEIGHT; ++i)
+	for (unsigned int i = 0; i < window->getSize().y; ++i)
 	{
-		if ((i % WALKER_HEIGHT) == 0)
+		if ((i % TILE_HEIGHT) == 0)
 		{
 			float ifL = static_cast<float>(i);
 			sf::Vertex line[] =
 			{
 				sf::Vertex(sf::Vector2f(0.f, ifL), sf::Color(95, 95, 95), sf::Vector2f(100.f, 100.f)),
-				sf::Vertex(sf::Vector2f(static_cast<float>(WINDOW_WIDTH), ifL), sf::Color(95, 95, 95), sf::Vector2f(100.f, 100.f))
+				sf::Vertex(sf::Vector2f(window->getSize().x, ifL), sf::Color(95, 95, 95), sf::Vector2f(100.f, 100.f))
 			};
 			myRenderTexture.draw(line, 2, sf::Lines);
 		}

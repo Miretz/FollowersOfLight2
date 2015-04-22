@@ -1,8 +1,8 @@
-#include "ShaderLoader.h"
+#include "ShaderHandler.h"
 
-ShaderLoader::ShadersMap ShaderLoader::myShaders;
+ShaderHandler::ShadersMap ShaderHandler::myShaders;
 
-sf::Shader* ShaderLoader::getShader(const std::string& path)
+sf::Shader* ShaderHandler::getShader(const std::string& path)
 {
 	ShadersMap::iterator it = myShaders.find(path);
 
@@ -15,23 +15,23 @@ sf::Shader* ShaderLoader::getShader(const std::string& path)
 	return myShaders[path].getShader();
 }
 
-ShaderLoader::ShaderObject::ShaderObject()
+ShaderHandler::ShaderObject::ShaderObject()
 {
 	myShader = NULL;
 }
 
-ShaderLoader::ShaderObject::~ShaderObject()
+ShaderHandler::ShaderObject::~ShaderObject()
 {
 	if (myShader)
 		delete myShader;
 }
 
-sf::Shader* ShaderLoader::ShaderObject::getShader() const
+sf::Shader* ShaderHandler::ShaderObject::getShader() const
 {
 	return myShader;
 };
 
-bool ShaderLoader::ShaderObject::loadShaderFromFile(const std::string& path)
+bool ShaderHandler::ShaderObject::loadShaderFromFile(const std::string& path)
 {
 	if (!myShader)
 		myShader = new sf::Shader;
