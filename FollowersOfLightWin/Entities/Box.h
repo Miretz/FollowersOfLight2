@@ -16,12 +16,12 @@ public:
 	Box(const sf::Vector2f& walkerPos, const sf::Vector2f& mWalkerSize, const sf::Texture& mTexture, const sf::Vector2u& mWinSize);
 	virtual ~Box(void) = default;
 
-	void update(float ft);
-	void draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader* shader);
-	void handle(const sf::Event& event, const sf::Vector2f& mousepPosition);
-	void checkCollision(const sf::FloatRect& otherBounds);
+	void update(float ft) override;
+	void draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader* shader) override;
+	void handle(const sf::Event& event, const sf::Vector2f& mousepPosition) override;
+	void checkCollision(const sf::FloatRect& otherBounds) override;
 
-	sf::Vector2f getPosition() const;
-	sf::FloatRect getBounds() const;
+	sf::Vector2f getPosition() const override;
+	sf::FloatRect getBounds() const override;
 
 };
