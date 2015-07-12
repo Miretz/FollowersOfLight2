@@ -19,7 +19,8 @@ Walker::Walker(const sf::Vector2f& mWalkerSize, const sf::Texture& mTexture, con
 void Walker::update(float ft)
 {
 
-	sf::Vector2f distance = target - sprite.getPosition();
+	sf::Vector2f position = sprite.getPosition();
+	sf::Vector2f distance = target - position;
 	
 	if ((abs(distance.x) < walkerSize.x) && (abs(distance.y) < walkerSize.y))
 	{
@@ -38,7 +39,11 @@ void Walker::update(float ft)
 	velocity.x = std::max(-WALKER_VELOCITY_LIMIT, velocity.x);
 	velocity.y = std::max(-WALKER_VELOCITY_LIMIT, velocity.y);
 
+	float angle = std::atan2f(velocity.y,  velocity.x);
+	sprite.setRotation((angle * 57.2957795f) + 90);
+
 	sprite.move(velocity * ft);
+
 	
 }
 
