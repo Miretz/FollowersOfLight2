@@ -90,7 +90,7 @@ void Walker::checkCollision(const sf::FloatRect& otherBounds)
 		float newY = sprite.getPosition().y;
 
 		bool leftMore = (abs(boundingBox.left - otherBounds.left) > abs(boundingBox.top - otherBounds.top));
-		
+
 		if (leftMore){
 			if (boundingBox.left >= otherBounds.left){
 				newX = otherBounds.left + (walkerSize.x * 1.5f);
@@ -107,7 +107,7 @@ void Walker::checkCollision(const sf::FloatRect& otherBounds)
 				newY = otherBounds.top - (walkerSize.y * 0.5f);
 			}
 		}
-		
+
 		sprite.setPosition(newX, newY);
 		target.x = newX;
 		target.y = newY;
