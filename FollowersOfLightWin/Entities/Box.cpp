@@ -23,7 +23,11 @@ void Box::handle(const sf::Event& event, const sf::Vector2f& mousePosition)
 {
 }
 
-void Box::checkCollision(const sf::FloatRect& otherBounds)
+void Box::checkCollision(Entity* otherBounds)
+{
+}
+
+void Box::setPosition(const sf::Vector2f position)
 {
 }
 

@@ -79,40 +79,29 @@ void Walker::draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader*
 
 }
 
-void Walker::checkCollision(const sf::FloatRect& otherBounds)
+void Walker::checkCollision(Entity* other)
 {
-	sf::FloatRect boundingBox = sprite.getGlobalBounds();
+	
+	sf::Vector2f distVec = getPosition() - other->getPosition();
+	float distance = sqrt((distVec.x * distVec.x) + (distVec.y * distVec.y));
 
-	if (selected && boundingBox.intersects(otherBounds))
-	{
+	float collisionDepth = walkerSize.x - distance;
 
-		float newX = sprite.getPosition().x;
-		float newY = sprite.getPosition().y;
+	if (collisionDepth > 0.0f) {
 
-		bool leftMore = (abs(boundingBox.left - otherBounds.left) > abs(boundingBox.top - otherBounds.top));
+		normalize(distVec);
+		sf::Vector2f collisionDepthVec = distVec * collisionDepth;
 
-		if (leftMore){
-			if (boundingBox.left >= otherBounds.left){
-				newX = otherBounds.left + (walkerSize.x * 1.5f);
-			}
-			if (boundingBox.left < otherBounds.left){
-				newX = otherBounds.left - (walkerSize.x * 0.5f);
-			}
-		}
-		else {
-			if (boundingBox.top >= otherBounds.top){
-				newY = otherBounds.top + (walkerSize.y * 1.5f);
-			}
-			if (boundingBox.top < otherBounds.top){
-				newY = otherBounds.top - (walkerSize.y * 0.5f);
-			}
-		}
+		sprite.setPosition(sprite.getPosition() + collisionDepthVec / 2.0f);
+		other->setPosition(other->getPosition() - collisionDepthVec / 2.0f);
 
-		sprite.setPosition(newX, newY);
-		target.x = newX;
-		target.y = newY;
 	}
 
+}
+
+void Walker::setPosition(const sf::Vector2f position)
+{
+	sprite.setPosition(position);
 }
 
 void Walker::handle(const sf::Event& event, const sf::Vector2f& mousePosition)

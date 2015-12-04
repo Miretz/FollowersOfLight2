@@ -193,7 +193,7 @@ void Game::checkCollisions(){
 		for (auto& entityB : entities){
 			if (entityA != entityB)
 			{
-				entityA->checkCollision(entityB->getBounds());
+				entityA->checkCollision(entityB.get());
 			}
 		}
 	}
