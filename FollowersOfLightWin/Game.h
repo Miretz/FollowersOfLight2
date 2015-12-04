@@ -25,12 +25,9 @@
 #define TILE_WIDTH 64
 #define TILE_HEIGHT 64
 
-//note change this afterwards
-#define SHADER_PATH "../FollowersOfLightWin/Resources/shader.frag"
-#define TILEMAP_PATH "../FollowersOfLightWin/Resources/Tilemap.png"
-#define WALKER_TEXTURE_PATH "../FollowersOfLightWin/Resources/Walker.png"
-
-
+#define SHADER_PATH "Resources/shader.frag"
+#define TILEMAP_PATH "Resources/Tilemap.png"
+#define WALKER_TEXTURE_PATH "Resources/Walker.png"
 
 class Game
 {
