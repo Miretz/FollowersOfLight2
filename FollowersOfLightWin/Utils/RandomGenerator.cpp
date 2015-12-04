@@ -17,7 +17,7 @@ float RandomGenerator::randomFloat(float min, float max)
 			min = 0;
 		}
 	}
-	std::uniform_real_distribution<float> rFloat{ min, max };
+	static std::uniform_real_distribution<float> rFloat{ min, max };
 	return rFloat(gen) - lessThanZero;
 }
 

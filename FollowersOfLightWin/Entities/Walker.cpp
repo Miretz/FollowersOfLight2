@@ -53,21 +53,19 @@ void Walker::draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader*
 
 	if (selected)
 	{
-		
-		sf::FloatRect boundingBox = sprite.getGlobalBounds();
-		
-		sf::RectangleShape selector(sf::Vector2f(boundingBox.width, boundingBox.height));
-		selector.setPosition(sprite.getPosition());
-		selector.setOrigin(boundingBox.width / 2.f, boundingBox.height/2.f);
+		//selection circle
+		sf::CircleShape selector(walkerSize.x / 2.0f + 4.0f);
+		selector.setPosition(getPosition());
+		selector.setOrigin(selector.getRadius(), selector.getRadius());
 		selector.setFillColor(sf::Color(0, 0, 0, 0));
 		selector.setOutlineThickness(2);
-		selector.setOutlineColor(sf::Color(255, 255, 255, 25));
+		selector.setOutlineColor(sf::Color(50, 255, 50, 100));
 		target.draw(selector);
 	}
 
 	shader->setParameter("frag_LightOrigin", sprite.getPosition());
 	shader->setParameter("frag_LightColor", color);
-	shader->setParameter("frag_LightAttenuation", 30.f);
+	shader->setParameter("frag_LightAttenuation", 10.f);
 
 	sf::RenderStates states;
 	states.shader = shader;
