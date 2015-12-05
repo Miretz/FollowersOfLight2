@@ -1,5 +1,7 @@
 #include "Walker.h"
 
+#include "../Utils/VectorUtils.h"
+
 Walker::Walker(const sf::Vector2f& mWalkerSize, const sf::Texture& mTexture, const sf::Vector2u& mWinSize) : walkerSize(mWalkerSize), winSize(mWinSize)
 {
 	sprite.setTexture(mTexture);
@@ -28,9 +30,8 @@ void Walker::update(float ft)
 		velocity.y = 0.f;
 		return;
 	}
-	
-	normalize(distance);
 
+	distance = VectorUtils::normalize(distance);
 	velocity = distance * WALKER_VELOCITY_LIMIT;
 		
 	//limit velocity
@@ -44,7 +45,6 @@ void Walker::update(float ft)
 
 	sprite.move(velocity * ft);
 
-	
 }
 
 
@@ -81,13 +81,13 @@ void Walker::checkCollision(Entity* other)
 {
 	
 	sf::Vector2f distVec = getPosition() - other->getPosition();
-	float distance = sqrt((distVec.x * distVec.x) + (distVec.y * distVec.y));
+	float distance = VectorUtils::length(distVec);
 
 	float collisionDepth = walkerSize.x - distance;
 
 	if (collisionDepth > 0.0f) {
 
-		normalize(distVec);
+		distVec = VectorUtils::normalize(distVec);
 		sf::Vector2f collisionDepthVec = distVec * collisionDepth;
 
 		sprite.setPosition(sprite.getPosition() + collisionDepthVec / 2.0f);
@@ -180,14 +180,6 @@ sf::Vector3f Walker::generateRandomColor()
 	return sf::Vector3f(r, g, b);
 }
 
-void Walker::normalize(sf::Vector2f& source)
-{
-	float length = sqrt((source.x * source.x) + (source.y * source.y));
-	if (length != 0)
-	{
-		source.x = source.x / length;
-		source.y = source.y / length;
-	}
-}
+
 
 

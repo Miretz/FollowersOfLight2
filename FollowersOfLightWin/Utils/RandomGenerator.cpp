@@ -7,8 +7,8 @@ float RandomGenerator::randomFloat(float min, float max)
 	{
 		if (max < 0.f)
 		{
-			std::uniform_real_distribution<float> rFloat{ std::abs(min), std::abs(max) };
-			return rFloat(gen) * -1;
+			static std::uniform_real_distribution<float> absrFloat{ std::abs(min), std::abs(max) };
+			return absrFloat(gen) * -1;
 		}
 		else
 		{

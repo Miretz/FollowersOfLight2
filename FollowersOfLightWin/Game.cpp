@@ -1,37 +1,40 @@
 #include "Game.h"
 
+const int Game::level[] =
+{
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 4, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0,
+	0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+	0, 0, 1, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 0, 0,
+	0, 0, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 2, 1, 0, 0,
+	0, 0, 1, 2, 3, 1, 4, 1, 1, 4, 1, 3, 2, 1, 0, 0,
+	0, 0, 1, 2, 3, 1, 1, 1, 1, 1, 1, 3, 2, 1, 0, 0,
+	0, 0, 1, 2, 3, 3, 4, 3, 3, 3, 3, 3, 2, 1, 0, 0,
+	0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0,
+	0, 0, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 0, 0,
+	0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+
 Game::Game() : running(false)
 {
 	
 	//create window singleton instance
 	window = WindowHandler::Instance()->getWindow();
 
-	//load texture
-	texture = TextureHandler::getTexture(WALKER_TEXTURE_PATH);
-	texture->setSmooth(true);
+	//load texture walker
+	walkerTexture = TextureHandler::getTexture(WALKER_TEXTURE_PATH);
+	walkerTexture->setSmooth(true);
 	
+	//load texture box
+	boxTexture = TextureHandler::getTexture(BOX_TEXTURE_PATH);
+	boxTexture->setSmooth(true);
+
 	//load shader
 	shader = ShaderHandler::getShader(SHADER_PATH);
 	shader->setParameter("frag_ScreenResolution", sf::Vector2f(window->getSize()));
-
-	//load tilemap
-	const int level[] =
-	{
-		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-		0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-	};
 	
-	if (!map.load(TILEMAP_PATH, sf::Vector2u(64, 64), level, 16, 12))
+	if (!map.load(TILEMAP_PATH, sf::Vector2u(TILE_WIDTH, TILE_HEIGHT), level, LEVEL_WIDTH, LEVEL_HEIGHT))
 		std::cout << "Error loading tilemap!" << std::endl;
 
 }
@@ -80,14 +83,19 @@ void Game::initializeWalkers()
 {
 	for (int a = 0; a < WALKER_COUNT; ++a)
 	{
-		entities.emplace_back(std::make_unique<Walker>(sf::Vector2f(TILE_WIDTH, TILE_HEIGHT), *texture, window->getSize()));
+		entities.emplace_back(std::make_unique<Walker>(sf::Vector2f(TILE_WIDTH, TILE_HEIGHT), *walkerTexture, window->getSize()));
 	}
 	
-	for (int a = 0; a < BOX_COUNT; ++a)
+	int levelSize = (sizeof(level) / sizeof(*level));
+	for (int a = 0; a < levelSize; ++a)
 	{
-		if (a != 4)
-		{
-			entities.emplace_back(std::make_unique<Box>(sf::Vector2f(((a + 1) * TILE_WIDTH) - (TILE_WIDTH / 2.0f), (10 * TILE_HEIGHT) - (TILE_WIDTH / 2.0f)), sf::Vector2f(TILE_WIDTH, TILE_HEIGHT), *texture, window->getSize()));
+		if (level[a] == 4){
+
+			int x = a % LEVEL_WIDTH;
+			int y = a / LEVEL_WIDTH;
+
+			sf::Vector2f posVec(((x + 1) * TILE_WIDTH) - (TILE_WIDTH / 2.0f), ((y + 1) * TILE_HEIGHT) - (TILE_WIDTH / 2.0f));
+			entities.emplace_back(std::make_unique<Box>(posVec, sf::Vector2f(TILE_WIDTH, TILE_HEIGHT), *boxTexture, window->getSize()));
 		}
 	}
 }
@@ -144,7 +152,7 @@ void Game::draw()
 	myRenderTexture.draw(map);
 
 	//draw grid
-	drawGrid();
+	//drawGrid();
 
 	for (auto& entity : entities)
 	{
@@ -189,6 +197,17 @@ void Game::drawGrid()
 
 
 void Game::checkCollisions(){
+	
+	static const float edge = TILE_WIDTH / 2;
+
+	//prevent leaving out of screen
+	for (auto& entity : entities){
+		if (entity->getPosition().x < 0 + edge){ entity->setPosition(sf::Vector2f(edge, entity->getPosition().y)); }
+		if (entity->getPosition().y < 0 + edge){ entity->setPosition(sf::Vector2f(entity->getPosition().x, edge)); }
+		if (entity->getPosition().x > window->getSize().x - edge){ entity->setPosition(sf::Vector2f(window->getSize().x - edge, entity->getPosition().y)); }
+		if (entity->getPosition().y > window->getSize().y - edge){ entity->setPosition(sf::Vector2f(entity->getPosition().x, window->getSize().y - edge)); }
+	}
+	
 	for (auto& entityA : entities){
 		for (auto& entityB : entities){
 			if (entityA != entityB)

@@ -84,6 +84,7 @@
     <ClInclude Include="Handlers\ShaderHandler.h" />
     <ClInclude Include="Utils\Tilemap.h" />
     <ClInclude Include="Entities\Walker.h" />
+    <ClInclude Include="Utils\VectorUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entities\Box.cpp" />
@@ -98,6 +99,7 @@
     <ClCompile Include="Entities\Walker.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Resources\Box.png" />
     <Image Include="Resources\Tilemap.png" />
     <Image Include="Resources\Walker.png" />
   </ItemGroup>

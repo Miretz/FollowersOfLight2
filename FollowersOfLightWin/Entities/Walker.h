@@ -23,8 +23,6 @@ private:
 	sf::Vector2f walkerSize;
 	sf::Vector2u winSize;
 	sf::Vector2f target;
-	
-	void normalize(sf::Vector2f& source);
 
 	bool checkSelect(const sf::Vector2f& mousePosition);
 	void addTarget(const sf::Vector2f targetPosition);

@@ -18,7 +18,6 @@
 #define FTSLICE 1.f
 
 #define WALKER_COUNT 6
-#define BOX_COUNT 16
 
 #define DETECTION_RADIUS 80.f
 
@@ -28,9 +27,16 @@
 #define SHADER_PATH "Resources/shader.frag"
 #define TILEMAP_PATH "Resources/Tilemap.png"
 #define WALKER_TEXTURE_PATH "Resources/Walker.png"
+#define BOX_TEXTURE_PATH "Resources/Box.png"
+
+#define LEVEL_WIDTH 16
+#define LEVEL_HEIGHT 12
 
 class Game
 {
+	
+	const static int level[];
+		
 	float lastFt = 0.f;
 	float currentSlice = 0.f;
 	bool running;
@@ -49,7 +55,8 @@ class Game
 	void drawGrid();
 	void checkCollisions();
 
-	sf::Texture* texture;
+	sf::Texture* walkerTexture;
+	sf::Texture* boxTexture;
 
 	Tilemap map;
 
