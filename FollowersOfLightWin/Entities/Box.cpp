@@ -2,14 +2,14 @@
 
 #include "../Utils/VectorUtils.h"
 
-Box::Box(const sf::Vector2f& mWalkerPos, const sf::Vector2f& mWalkerSize, const sf::Texture& mTexture, const sf::Vector2u& mWinSize) : m_walkerSize(mWalkerSize), m_winSize(mWinSize)
+Box::Box(const sf::Vector2f& walkerPos, const sf::Vector2f& walkerSize, const sf::Texture& texture, const sf::Vector2u& winSize) : m_walkerSize(walkerSize), m_winSize(winSize)
 {
-	m_shape.setPosition(mWalkerPos.x, mWalkerPos.y);
+	m_shape.setPosition(walkerPos.x, walkerPos.y);
 	m_shape.setSize({ m_walkerSize.x, m_walkerSize.y });
 	m_shape.setFillColor(sf::Color::White);
 	m_shape.setOrigin(m_walkerSize.x / 2.0f, m_walkerSize.y / 2.0f);
 	
-	m_shape.setTexture(&mTexture);
+	m_shape.setTexture(&texture);
 
 }
 
@@ -55,7 +55,6 @@ void Box::checkCollision(Entity* other)
 
 		other->setPosition(other->getPosition() - collisionDepthVec);
 	}
-
 }
 
 void Box::setPosition(const sf::Vector2f position)

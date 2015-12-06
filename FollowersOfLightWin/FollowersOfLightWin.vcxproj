@@ -77,6 +77,7 @@
   <ItemGroup>
     <ClInclude Include="Entities\Box.h" />
     <ClInclude Include="Entities\Entity.h" />
+    <ClInclude Include="Entities\PushableBox.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Handlers\TextureHandler.h" />
     <ClInclude Include="Handlers\WindowHandler.h" />
@@ -89,6 +90,7 @@
   <ItemGroup>
     <ClCompile Include="Entities\Box.cpp" />
     <ClCompile Include="Entities\Entity.cpp" />
+    <ClCompile Include="Entities\PushableBox.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Handlers\TextureHandler.cpp" />
     <ClCompile Include="Handlers\WindowHandler.cpp" />
@@ -100,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Box.png" />
+    <Image Include="Resources\PushableBox.png" />
     <Image Include="Resources\Tilemap.png" />
     <Image Include="Resources\Walker.png" />
   </ItemGroup>

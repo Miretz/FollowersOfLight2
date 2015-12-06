@@ -7,7 +7,7 @@ class Entity
 {
 public:
 
-	enum class Type { BOX, WALKER };
+	enum class Type { BOX, WALKER, PUSHABLE_BOX };
 
 	static RandomGenerator gen;
 
@@ -17,7 +17,7 @@ public:
 	virtual void update(float ft) { }
 	virtual void draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader* shader) { }
 	virtual void handle(const sf::Event& event, const sf::Vector2f& mousepPosition) { }
-	virtual void checkCollision(Entity* otherBounds) { }
+	virtual void checkCollision(Entity* other) { }
 	
 	virtual sf::Vector2f getPosition() const = 0;
 	virtual void setPosition(const sf::Vector2f position) = 0;

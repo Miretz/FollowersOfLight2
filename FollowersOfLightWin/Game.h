@@ -7,6 +7,7 @@
 #include "Entities/Entity.h"
 #include "Entities/Walker.h"
 #include "Entities/Box.h"
+#include "Entities/PushableBox.h"
 
 #include "Handlers/ShaderHandler.h"
 #include "Handlers/TextureHandler.h"
@@ -26,6 +27,7 @@
 #define TILEMAP_PATH "Resources/Tilemap.png"
 #define WALKER_TEXTURE_PATH "Resources/Walker.png"
 #define BOX_TEXTURE_PATH "Resources/Box.png"
+#define PUSHABLE_BOX_TEXTURE_PATH "Resources/PushableBox.png"
 
 #define LEVEL_WIDTH 16
 #define LEVEL_HEIGHT 12
@@ -53,6 +55,7 @@ private:
 	
 	sf::Texture* m_walkerTexture;
 	sf::Texture* m_boxTexture;
+	sf::Texture* m_pushableBoxTexture;
 
 	Tilemap m_map;
 

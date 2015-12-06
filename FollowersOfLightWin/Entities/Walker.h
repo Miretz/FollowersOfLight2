@@ -35,10 +35,10 @@ public:
 	void update(float ft) override;
 	void draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader* shader) override;
 	void handle(const sf::Event& event, const sf::Vector2f& mousepPosition) override;
-	void checkCollision(Entity* otherBounds) override;
+	void checkCollision(Entity* other) override;
 
 	sf::Vector2f getPosition() const override;
 	void setPosition(const sf::Vector2f position) override;
 	sf::FloatRect getBounds() const override;
-	const Type getType() const { return Type::WALKER; };
+	virtual const Type getType() const override { return Type::WALKER; };
 };

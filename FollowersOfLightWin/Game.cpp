@@ -7,7 +7,7 @@ const int Game::m_level[] =
 	0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
 	0, 0, 1, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 0, 0,
 	0, 0, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 2, 1, 0, 0,
-	0, 0, 1, 4, 3, 4, 1, 4, 1, 1, 1, 3, 2, 4, 0, 0,
+	0, 0, 1, 4, 3, 4, 1, 5, 1, 5, 1, 3, 2, 4, 0, 0,
 	0, 0, 1, 2, 3, 1, 1, 1, 1, 1, 1, 3, 2, 1, 0, 0,
 	0, 0, 1, 2, 3, 3, 3, 4, 3, 3, 3, 3, 2, 4, 0, 0,
 	0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0,
@@ -29,6 +29,10 @@ Game::Game() : m_running(false)
 	//load texture box
 	m_boxTexture = TextureHandler::getTexture(BOX_TEXTURE_PATH);
 	m_boxTexture->setSmooth(true);
+
+	//load pushable box texture
+	m_pushableBoxTexture = TextureHandler::getTexture(PUSHABLE_BOX_TEXTURE_PATH);
+	m_pushableBoxTexture->setSmooth(true);
 
 	//load shader
 	m_shader = ShaderHandler::getShader(SHADER_PATH);
@@ -96,6 +100,15 @@ void Game::initializeWalkers()
 
 			sf::Vector2f posVec(((x + 1) * TILE_WIDTH) - (TILE_WIDTH / 2.0f), ((y + 1) * TILE_HEIGHT) - (TILE_WIDTH / 2.0f));
 			m_entities.emplace_back(std::make_unique<Box>(posVec, sf::Vector2f(TILE_WIDTH, TILE_HEIGHT), *m_boxTexture, m_window->getSize()));
+		}
+
+		if (m_level[a] == 5){
+
+			int x = a % LEVEL_WIDTH;
+			int y = a / LEVEL_WIDTH;
+
+			sf::Vector2f posVec(((x + 1) * TILE_WIDTH) - (TILE_WIDTH / 2.0f), ((y + 1) * TILE_HEIGHT) - (TILE_WIDTH / 2.0f));
+			m_entities.emplace_back(std::make_unique<PushableBox>(posVec, sf::Vector2f(TILE_WIDTH, TILE_HEIGHT), *m_pushableBoxTexture, m_window->getSize()));
 		}
 	}
 }
