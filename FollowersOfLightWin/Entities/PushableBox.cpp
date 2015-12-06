@@ -27,10 +27,9 @@ void PushableBox::checkCollision(Entity* other) {
 		distVec = VectorUtils::normalize(distVec);
 		sf::Vector2f collisionDepthVec = distVec * collisionDepth;
 
-		//shape.setPosition(shape.getPosition() + collisionDepthVec / 2.0f);
-		//other->setPosition(other->getPosition() - collisionDepthVec / 2.0f);
+		m_shape.setPosition(m_shape.getPosition() + collisionDepthVec / 2.0f);
+		other->setPosition(other->getPosition() - collisionDepthVec / 2.0f);
 
-		other->setPosition(other->getPosition() - collisionDepthVec);
 	}
 
 }
