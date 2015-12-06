@@ -1,40 +1,40 @@
 #include "ShaderHandler.h"
 
-ShaderHandler::ShadersMap ShaderHandler::myShaders;
+ShaderHandler::ShadersMap ShaderHandler::m_shaders;
 
 sf::Shader* ShaderHandler::getShader(const std::string& path)
 {
-	ShadersMap::iterator it = myShaders.find(path);
+	ShadersMap::iterator it = m_shaders.find(path);
 
-	if (it != myShaders.end())
+	if (it != m_shaders.end())
 		return it->second.getShader();
 
-	if (!myShaders[path].loadShaderFromFile(path))
+	if (!m_shaders[path].loadShaderFromFile(path))
 		std::cout << "An error occured while loading the following shader:" << path << std::endl;
 
-	return myShaders[path].getShader();
+	return m_shaders[path].getShader();
 }
 
 ShaderHandler::ShaderObject::ShaderObject()
 {
-	myShader = NULL;
+	m_shader = NULL;
 }
 
 ShaderHandler::ShaderObject::~ShaderObject()
 {
-	if (myShader)
-		delete myShader;
+	if (m_shader)
+		delete m_shader;
 }
 
 sf::Shader* ShaderHandler::ShaderObject::getShader() const
 {
-	return myShader;
+	return m_shader;
 };
 
 bool ShaderHandler::ShaderObject::loadShaderFromFile(const std::string& path)
 {
-	if (!myShader)
-		myShader = new sf::Shader;
+	if (!m_shader)
+		m_shader = new sf::Shader;
 
-	return myShader->loadFromFile(path, sf::Shader::Fragment);
+	return m_shader->loadFromFile(path, sf::Shader::Fragment);
 }

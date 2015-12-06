@@ -2,12 +2,12 @@
 
 float RandomGenerator::randomFloat(float min, float max)
 {
-	float lessThanZero = 0.f;
-	if (min < 0.f)
+	float lessThanZero = 0.0f;
+	if (min < 0.0f)
 	{
-		if (max < 0.f)
+		if (max < 0.0f)
 		{
-			static std::uniform_real_distribution<float> absrFloat{ std::abs(min), std::abs(max) };
+			std::uniform_real_distribution<float> absrFloat{ std::abs(min), std::abs(max) };
 			return absrFloat(gen) * -1;
 		}
 		else
@@ -17,7 +17,7 @@ float RandomGenerator::randomFloat(float min, float max)
 			min = 0;
 		}
 	}
-	static std::uniform_real_distribution<float> rFloat{ min, max };
+	std::uniform_real_distribution<float> rFloat{ min, max };
 	return rFloat(gen) - lessThanZero;
 }
 

@@ -2,14 +2,14 @@
 
 #include "../Utils/VectorUtils.h"
 
-Box::Box(const sf::Vector2f& mWalkerPos, const sf::Vector2f& mWalkerSize, const sf::Texture& mTexture, const sf::Vector2u& mWinSize) : walkerSize(mWalkerSize), winSize(mWinSize)
+Box::Box(const sf::Vector2f& mWalkerPos, const sf::Vector2f& mWalkerSize, const sf::Texture& mTexture, const sf::Vector2u& mWinSize) : m_walkerSize(mWalkerSize), m_winSize(mWinSize)
 {
-	shape.setPosition(mWalkerPos.x, mWalkerPos.y);
-	shape.setSize({ walkerSize.x, walkerSize.y });
-	shape.setFillColor(sf::Color::White);
-	shape.setOrigin(walkerSize.x / 2.0f, walkerSize.y / 2.0f);
+	m_shape.setPosition(mWalkerPos.x, mWalkerPos.y);
+	m_shape.setSize({ m_walkerSize.x, m_walkerSize.y });
+	m_shape.setFillColor(sf::Color::White);
+	m_shape.setOrigin(m_walkerSize.x / 2.0f, m_walkerSize.y / 2.0f);
 	
-	shape.setTexture(&mTexture);
+	m_shape.setTexture(&mTexture);
 
 }
 
@@ -20,7 +20,7 @@ void Box::update(float ft)
 
 void Box::draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader* shader)
 {
-	shader->setParameter("frag_LightOrigin", shape.getPosition());
+	shader->setParameter("frag_LightOrigin", m_shape.getPosition());
 	shader->setParameter("frag_LightColor", sf::Vector3f(0.0f, 0.0f, 0.0f));
 	shader->setParameter("frag_LightAttenuation", 50.f);
 
@@ -30,7 +30,7 @@ void Box::draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader* sh
 
 	target.draw(spriteworld, states);
 
-	target.draw(shape);
+	target.draw(m_shape);
 }
 
 void Box::handle(const sf::Event& event, const sf::Vector2f& mousePosition)
@@ -42,31 +42,33 @@ void Box::checkCollision(Entity* other)
 	sf::Vector2f distVec = getPosition() - other->getPosition();
 	float distance = VectorUtils::length(distVec);
 
-	float collisionDepth = walkerSize.x - distance;
+	float collisionDepth = m_walkerSize.x - distance;
 
-	if (collisionDepth > 0.0f) {
+	if (collisionDepth > 0.0f) 
+	{
 
 		distVec = VectorUtils::normalize(distVec);
 		sf::Vector2f collisionDepthVec = distVec * collisionDepth;
 
-		shape.setPosition(shape.getPosition() + collisionDepthVec / 2.0f);
-		other->setPosition(other->getPosition() - collisionDepthVec / 2.0f);
+		//shape.setPosition(shape.getPosition() + collisionDepthVec / 2.0f);
+		//other->setPosition(other->getPosition() - collisionDepthVec / 2.0f);
 
+		other->setPosition(other->getPosition() - collisionDepthVec);
 	}
 
 }
 
 void Box::setPosition(const sf::Vector2f position)
 {
-	shape.setPosition(position);
+	m_shape.setPosition(position);
 }
 
 sf::FloatRect Box::getBounds() const
 {
-	return shape.getGlobalBounds();
+	return m_shape.getGlobalBounds();
 }
 
 sf::Vector2f Box::getPosition() const
 {
-	return shape.getPosition();
+	return m_shape.getPosition();
 }

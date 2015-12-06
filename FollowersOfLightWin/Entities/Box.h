@@ -5,12 +5,6 @@
 
 class Box : public Entity
 {
-private:
-	sf::RectangleShape shape;
-
-	sf::Vector2f walkerSize;
-	sf::Vector2u winSize;
-
 public:
 
 	Box(const sf::Vector2f& walkerPos, const sf::Vector2f& mWalkerSize, const sf::Texture& mTexture, const sf::Vector2u& mWinSize);
@@ -24,5 +18,11 @@ public:
 	sf::Vector2f getPosition() const override;
 	void setPosition(const sf::Vector2f position) override;
 	sf::FloatRect getBounds() const override;
+	const Type getType() const { return Type::BOX; };
+
+private:
+	sf::RectangleShape m_shape;
+	sf::Vector2f m_walkerSize;
+	sf::Vector2u m_winSize;
 
 };

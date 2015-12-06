@@ -1,40 +1,40 @@
 #include "TextureHandler.h"
 
-TextureHandler::TexturesMap TextureHandler::myTextures;
+TextureHandler::TexturesMap TextureHandler::m_textures;
 
 sf::Texture* TextureHandler::getTexture(const std::string& path)
 {
-	TexturesMap::iterator it = myTextures.find(path);
+	TexturesMap::iterator it = m_textures.find(path);
 
-	if (it != myTextures.end())
+	if (it != m_textures.end())
 		return it->second.getTexture();
 
-	if (!myTextures[path].loadTextureFromFile(path))
+	if (!m_textures[path].loadTextureFromFile(path))
 		std::cout << "An error occured while loading the following texture:" << path << std::endl;
 
-	return myTextures[path].getTexture();
+	return m_textures[path].getTexture();
 }
 
 TextureHandler::TextureObject::TextureObject()
 {
-	mTexture = NULL;
+	m_texture = NULL;
 }
 
 TextureHandler::TextureObject::~TextureObject()
 {
-	if (mTexture)
-		delete mTexture;
+	if (m_texture)
+		delete m_texture;
 }
 
 sf::Texture* TextureHandler::TextureObject::getTexture() const
 {
-	return mTexture;
+	return m_texture;
 };
 
 bool TextureHandler::TextureObject::loadTextureFromFile(const std::string& path)
 {
-	if (!mTexture)
-		mTexture = new sf::Texture;
+	if (!m_texture)
+		m_texture = new sf::Texture;
 
-	return mTexture->loadFromFile(path);
+	return m_texture->loadFromFile(path);
 }

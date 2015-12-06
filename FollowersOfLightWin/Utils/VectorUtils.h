@@ -2,7 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 
-class VectorUtils {
+class VectorUtils 
+{
 public:
 
 	static const sf::Vector2f& normalize(const sf::Vector2f& source)

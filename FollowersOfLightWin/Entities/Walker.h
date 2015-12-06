@@ -14,22 +14,22 @@ class Walker : public Entity
 {
 private:
 
-	sf::Sprite sprite;
+	sf::Sprite m_sprite;
 
-	sf::Vector2f velocity;
-	sf::Vector3f color;
+	sf::Vector2f m_velocity;
+	sf::Vector3f m_color;
+	sf::Vector2f m_walkerSize;
+	sf::Vector2u m_winSize;
+	sf::Vector2f m_target;
+
 	sf::Vector3f generateRandomColor();
-
-	sf::Vector2f walkerSize;
-	sf::Vector2u winSize;
-	sf::Vector2f target;
 
 	bool checkSelect(const sf::Vector2f& mousePosition);
 	void addTarget(const sf::Vector2f targetPosition);
 
 public:
 
-	Walker(const sf::Vector2f& mWalkerSize, const sf::Texture& mTexture, const sf::Vector2u& mWinSize);
+	Walker(const sf::Vector2f& walkerSize, const sf::Texture& texture, const sf::Vector2u& winSize);
 	virtual ~Walker(void) = default;
 
 	void update(float ft) override;
@@ -40,5 +40,5 @@ public:
 	sf::Vector2f getPosition() const override;
 	void setPosition(const sf::Vector2f position) override;
 	sf::FloatRect getBounds() const override;
-	
+	const Type getType() const { return Type::WALKER; };
 };

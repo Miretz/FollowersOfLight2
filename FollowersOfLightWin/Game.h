@@ -19,8 +19,6 @@
 
 #define WALKER_COUNT 6
 
-#define DETECTION_RADIUS 80.f
-
 #define TILE_WIDTH 64
 #define TILE_HEIGHT 64
 
@@ -34,19 +32,29 @@
 
 class Game
 {
+public:
+	Game();
+	virtual ~Game() = default;
+	void run();
+
+private:
+	const static int m_level[];
+
+	float m_lastFt = 0.f;
+	float m_currentSlice = 0.f;
+	bool m_running;
+
+	sf::RenderWindow* m_window;
+	sf::RenderTexture m_myRenderTexture;
+	sf::Sprite m_spriteWorld;
+	sf::Shader* m_shader;
+
+	std::vector<std::unique_ptr<Entity>> m_entities;
 	
-	const static int level[];
-		
-	float lastFt = 0.f;
-	float currentSlice = 0.f;
-	bool running;
+	sf::Texture* m_walkerTexture;
+	sf::Texture* m_boxTexture;
 
-	sf::RenderWindow* window;
-	sf::RenderTexture myRenderTexture;
-	sf::Sprite spriteWorld;
-	sf::Shader* shader;
-
-	std::vector<std::unique_ptr<Entity>> entities;
+	Tilemap m_map;
 
 	void initializeWalkers();
 	void checkInput();
@@ -55,13 +63,4 @@ class Game
 	void drawGrid();
 	void checkCollisions();
 
-	sf::Texture* walkerTexture;
-	sf::Texture* boxTexture;
-
-	Tilemap map;
-
-public:
-	Game();
-	virtual ~Game() = default;
-	void run();
 };

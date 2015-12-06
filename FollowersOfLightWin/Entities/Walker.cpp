@@ -2,48 +2,48 @@
 
 #include "../Utils/VectorUtils.h"
 
-Walker::Walker(const sf::Vector2f& mWalkerSize, const sf::Texture& mTexture, const sf::Vector2u& mWinSize) : walkerSize(mWalkerSize), winSize(mWinSize)
+Walker::Walker(const sf::Vector2f& walkerSize, const sf::Texture& texture, const sf::Vector2u& winSize) : m_walkerSize(walkerSize), m_winSize(winSize)
 {
-	sprite.setTexture(mTexture);
+	m_sprite.setTexture(texture);
 	
-	color = generateRandomColor();
+	m_color = generateRandomColor();
 
-	float mX = gen.randomFloat(0.f, static_cast<float>(winSize.x - walkerSize.x)) + walkerSize.x;
-	float mY = gen.randomFloat(0.f, static_cast<float>(winSize.y - walkerSize.y)) + walkerSize.y;
+	float mX = gen.randomFloat(0.f, static_cast<float>(m_winSize.x - m_walkerSize.x)) + m_walkerSize.x;
+	float mY = gen.randomFloat(0.f, static_cast<float>(m_winSize.y - m_walkerSize.y)) + m_walkerSize.y;
 
-	sprite.setPosition(mX, mY);
+	m_sprite.setPosition(mX, mY);
 
-	target = sprite.getPosition();
+	m_target = m_sprite.getPosition();
 
-	sprite.setOrigin(walkerSize.x / 2.0f, walkerSize.y / 2.0f);
+	m_sprite.setOrigin(m_walkerSize.x / 2.0f, m_walkerSize.y / 2.0f);
 }
 
 void Walker::update(float ft)
 {
 
-	sf::Vector2f position = sprite.getPosition();
-	sf::Vector2f distance = target - position;
+	sf::Vector2f position = m_sprite.getPosition();
+	sf::Vector2f distance = m_target - position;
 	
-	if ((abs(distance.x) < walkerSize.x) && (abs(distance.y) < walkerSize.y))
+	if ((abs(distance.x) < m_walkerSize.x) && (abs(distance.y) < m_walkerSize.y))
 	{
-		velocity.x = 0.f;
-		velocity.y = 0.f;
+		m_velocity.x = 0.f;
+		m_velocity.y = 0.f;
 		return;
 	}
 
 	distance = VectorUtils::normalize(distance);
-	velocity = distance * WALKER_VELOCITY_LIMIT;
+	m_velocity = distance * WALKER_VELOCITY_LIMIT;
 		
 	//limit velocity
-	velocity.x = std::min(WALKER_VELOCITY_LIMIT, velocity.x);
-	velocity.y = std::min(WALKER_VELOCITY_LIMIT, velocity.y);
-	velocity.x = std::max(-WALKER_VELOCITY_LIMIT, velocity.x);
-	velocity.y = std::max(-WALKER_VELOCITY_LIMIT, velocity.y);
+	m_velocity.x = std::min(WALKER_VELOCITY_LIMIT, m_velocity.x);
+	m_velocity.y = std::min(WALKER_VELOCITY_LIMIT, m_velocity.y);
+	m_velocity.x = std::max(-WALKER_VELOCITY_LIMIT, m_velocity.x);
+	m_velocity.y = std::max(-WALKER_VELOCITY_LIMIT, m_velocity.y);
 
-	float angle = std::atan2f(velocity.y,  velocity.x);
-	sprite.setRotation((angle * 57.2957795f) + 90);
+	float angle = std::atan2f(m_velocity.y, m_velocity.x);
+	m_sprite.setRotation((angle * 57.2957795f) + 90);
 
-	sprite.move(velocity * ft);
+	m_sprite.move(m_velocity * ft);
 
 }
 
@@ -54,7 +54,7 @@ void Walker::draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader*
 	if (selected)
 	{
 		//selection circle
-		sf::CircleShape selector(walkerSize.x / 2.0f + 4.0f);
+		sf::CircleShape selector(m_walkerSize.x / 2.0f + 4.0f);
 		selector.setPosition(getPosition());
 		selector.setOrigin(selector.getRadius(), selector.getRadius());
 		selector.setFillColor(sf::Color(0, 0, 0, 0));
@@ -63,8 +63,8 @@ void Walker::draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader*
 		target.draw(selector);
 	}
 
-	shader->setParameter("frag_LightOrigin", sprite.getPosition());
-	shader->setParameter("frag_LightColor", color);
+	shader->setParameter("frag_LightOrigin", m_sprite.getPosition());
+	shader->setParameter("frag_LightColor", m_color);
 	shader->setParameter("frag_LightAttenuation", 10.f);
 
 	sf::RenderStates states;
@@ -73,24 +73,29 @@ void Walker::draw(sf::RenderTarget& target, sf::Sprite& spriteworld, sf::Shader*
 
 	target.draw(spriteworld, states);
 
-	target.draw(sprite);
+	target.draw(m_sprite);
 
 }
 
 void Walker::checkCollision(Entity* other)
 {
 	
+	if (other->getType() == Type::BOX)
+	{
+		return;
+	}
+
 	sf::Vector2f distVec = getPosition() - other->getPosition();
 	float distance = VectorUtils::length(distVec);
 
-	float collisionDepth = walkerSize.x - distance;
+	float collisionDepth = m_walkerSize.x - distance;
 
 	if (collisionDepth > 0.0f) {
 
 		distVec = VectorUtils::normalize(distVec);
 		sf::Vector2f collisionDepthVec = distVec * collisionDepth;
 
-		sprite.setPosition(sprite.getPosition() + collisionDepthVec / 2.0f);
+		m_sprite.setPosition(m_sprite.getPosition() + collisionDepthVec / 2.0f);
 		other->setPosition(other->getPosition() - collisionDepthVec / 2.0f);
 
 	}
@@ -99,7 +104,7 @@ void Walker::checkCollision(Entity* other)
 
 void Walker::setPosition(const sf::Vector2f position)
 {
-	sprite.setPosition(position);
+	m_sprite.setPosition(position);
 }
 
 void Walker::handle(const sf::Event& event, const sf::Vector2f& mousePosition)
@@ -129,7 +134,7 @@ void Walker::handle(const sf::Event& event, const sf::Vector2f& mousePosition)
 bool Walker::checkSelect(const sf::Vector2f& mousePosition)
 {
 
-	sf::FloatRect boundingBox = sprite.getGlobalBounds();
+	sf::FloatRect boundingBox = m_sprite.getGlobalBounds();
 
 	if (boundingBox.contains(mousePosition))
 	{
@@ -155,21 +160,21 @@ void Walker::addTarget(const sf::Vector2f mousePosition)
 {
 	if (selected)
 	{
-		velocity.x = 0.f;
-		velocity.y = 0.f;
-		target.x = mousePosition.x;
-		target.y = mousePosition.y;
+		m_velocity.x = 0.f;
+		m_velocity.y = 0.f;
+		m_target.x = mousePosition.x;
+		m_target.y = mousePosition.y;
 	}
 }
 
 sf::FloatRect Walker::getBounds() const
 {
-	return sprite.getGlobalBounds();
+	return m_sprite.getGlobalBounds();
 }
 
 sf::Vector2f Walker::getPosition() const
 {
-	return sprite.getPosition();
+	return m_sprite.getPosition();
 }
 
 sf::Vector3f Walker::generateRandomColor()

@@ -19,9 +19,9 @@ private:
 		bool loadTextureFromFile(const std::string& path);
 
 	private:
-		sf::Texture* mTexture;
+		sf::Texture* m_texture;
 	};
 
 	typedef std::map<std::string, TextureObject> TexturesMap;
-	static TexturesMap myTextures;
+	static TexturesMap m_textures;
 };
